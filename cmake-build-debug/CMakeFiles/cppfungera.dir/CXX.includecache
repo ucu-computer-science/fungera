@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../PDCurses/curses.h
+stdarg.h
+-
+stddef.h
+-
+stdio.h
+-
+wchar.h
+-
+stdbool.h
+-
+
+C:/Users/kenticent/programming/cppfungera/main.cpp
+curses.h
+C:/Users/kenticent/programming/cppfungera/curses.h
+
