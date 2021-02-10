@@ -1,6 +1,4 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/cppfungera.dir/Memory.cpp.obj"
-  "CMakeFiles/cppfungera.dir/Organism.cpp.obj"
   "CMakeFiles/cppfungera.dir/main.cpp.obj"
   "cppfungera.exe"
   "cppfungera.exe.manifest"

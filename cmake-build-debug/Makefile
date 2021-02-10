@@ -58,10 +58,10 @@ cmake_force:
 SHELL = cmd.exe
 
 # The CMake executable.
-CMAKE_COMMAND = "C:\Program Files\JetBrains\CLion 2020.3.1\bin\cmake\win\bin\cmake.exe"
+CMAKE_COMMAND = "C:\Program Files\JetBrains\CLion 2020.2.4\bin\cmake\win\bin\cmake.exe"
 
 # The command to remove a file.
-RM = "C:\Program Files\JetBrains\CLion 2020.3.1\bin\cmake\win\bin\cmake.exe" -E rm -f
+RM = "C:\Program Files\JetBrains\CLion 2020.2.4\bin\cmake\win\bin\cmake.exe" -E rm -f
 
 # Escaping for special characters.
 EQUALS = =
@@ -78,7 +78,7 @@ CMAKE_BINARY_DIR = C:\Users\kenticent\programming\cppfungera\cmake-build-debug
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	"C:\Program Files\JetBrains\CLion 2020.3.1\bin\cmake\win\bin\cmake.exe" -E echo "No interactive CMake dialog available."
+	"C:\Program Files\JetBrains\CLion 2020.2.4\bin\cmake\win\bin\cmake.exe" -E echo "No interactive CMake dialog available."
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -89,7 +89,7 @@ edit_cache/fast: edit_cache
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	"C:\Program Files\JetBrains\CLion 2020.3.1\bin\cmake\win\bin\cmake.exe" --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	"C:\Program Files\JetBrains\CLion 2020.2.4\bin\cmake\win\bin\cmake.exe" --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -155,60 +155,6 @@ pdcurses/fast:
 	$(MAKE) $(MAKESILENT) -f PDCurses\pdcurses\CMakeFiles\pdcurses.dir\build.make PDCurses/pdcurses/CMakeFiles/pdcurses.dir/build
 .PHONY : pdcurses/fast
 
-Memory.obj: Memory.cpp.obj
-
-.PHONY : Memory.obj
-
-# target to build an object file
-Memory.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\cppfungera.dir\build.make CMakeFiles/cppfungera.dir/Memory.cpp.obj
-.PHONY : Memory.cpp.obj
-
-Memory.i: Memory.cpp.i
-
-.PHONY : Memory.i
-
-# target to preprocess a source file
-Memory.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\cppfungera.dir\build.make CMakeFiles/cppfungera.dir/Memory.cpp.i
-.PHONY : Memory.cpp.i
-
-Memory.s: Memory.cpp.s
-
-.PHONY : Memory.s
-
-# target to generate assembly for a file
-Memory.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\cppfungera.dir\build.make CMakeFiles/cppfungera.dir/Memory.cpp.s
-.PHONY : Memory.cpp.s
-
-Organism.obj: Organism.cpp.obj
-
-.PHONY : Organism.obj
-
-# target to build an object file
-Organism.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\cppfungera.dir\build.make CMakeFiles/cppfungera.dir/Organism.cpp.obj
-.PHONY : Organism.cpp.obj
-
-Organism.i: Organism.cpp.i
-
-.PHONY : Organism.i
-
-# target to preprocess a source file
-Organism.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\cppfungera.dir\build.make CMakeFiles/cppfungera.dir/Organism.cpp.i
-.PHONY : Organism.cpp.i
-
-Organism.s: Organism.cpp.s
-
-.PHONY : Organism.s
-
-# target to generate assembly for a file
-Organism.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\cppfungera.dir\build.make CMakeFiles/cppfungera.dir/Organism.cpp.s
-.PHONY : Organism.cpp.s
-
 main.obj: main.cpp.obj
 
 .PHONY : main.obj
@@ -246,12 +192,6 @@ help:
 	@echo ... rebuild_cache
 	@echo ... cppfungera
 	@echo ... pdcurses
-	@echo ... Memory.obj
-	@echo ... Memory.i
-	@echo ... Memory.s
-	@echo ... Organism.obj
-	@echo ... Organism.i
-	@echo ... Organism.s
 	@echo ... main.obj
 	@echo ... main.i
 	@echo ... main.s

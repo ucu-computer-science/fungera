@@ -4,8 +4,6 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "C:/Users/kenticent/programming/cppfungera/Memory.cpp" "C:/Users/kenticent/programming/cppfungera/cmake-build-debug/CMakeFiles/cppfungera.dir/Memory.cpp.obj"
-  "C:/Users/kenticent/programming/cppfungera/Organism.cpp" "C:/Users/kenticent/programming/cppfungera/cmake-build-debug/CMakeFiles/cppfungera.dir/Organism.cpp.obj"
   "C:/Users/kenticent/programming/cppfungera/main.cpp" "C:/Users/kenticent/programming/cppfungera/cmake-build-debug/CMakeFiles/cppfungera.dir/main.cpp.obj"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")

@@ -134,21 +134,6 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="C:/Users/kenticent/programming/cppfungera/Cell.h">
-			<Option target="cppfungera"/>
-		</Unit>
-		<Unit filename="C:/Users/kenticent/programming/cppfungera/Memory.cpp">
-			<Option target="cppfungera"/>
-		</Unit>
-		<Unit filename="C:/Users/kenticent/programming/cppfungera/Memory.h">
-			<Option target="cppfungera"/>
-		</Unit>
-		<Unit filename="C:/Users/kenticent/programming/cppfungera/Organism.cpp">
-			<Option target="cppfungera"/>
-		</Unit>
-		<Unit filename="C:/Users/kenticent/programming/cppfungera/Organism.h">
-			<Option target="cppfungera"/>
-		</Unit>
 		<Unit filename="C:/Users/kenticent/programming/cppfungera/PDCurses/pdcurses/addch.c">
 			<Option target="pdcurses"/>
 		</Unit>

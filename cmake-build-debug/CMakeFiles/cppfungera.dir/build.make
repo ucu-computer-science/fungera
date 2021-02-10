@@ -53,10 +53,10 @@ cmake_force:
 SHELL = cmd.exe
 
 # The CMake executable.
-CMAKE_COMMAND = "C:\Program Files\JetBrains\CLion 2020.3.1\bin\cmake\win\bin\cmake.exe"
+CMAKE_COMMAND = "C:\Program Files\JetBrains\CLion 2020.2.4\bin\cmake\win\bin\cmake.exe"
 
 # The command to remove a file.
-RM = "C:\Program Files\JetBrains\CLion 2020.3.1\bin\cmake\win\bin\cmake.exe" -E rm -f
+RM = "C:\Program Files\JetBrains\CLion 2020.2.4\bin\cmake\win\bin\cmake.exe" -E rm -f
 
 # Escaping for special characters.
 EQUALS = =
@@ -90,52 +90,20 @@ CMakeFiles/cppfungera.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/cppfungera.dir/main.cpp.s"
 	C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\kenticent\programming\cppfungera\main.cpp -o CMakeFiles\cppfungera.dir\main.cpp.s
 
-CMakeFiles/cppfungera.dir/Memory.cpp.obj: CMakeFiles/cppfungera.dir/flags.make
-CMakeFiles/cppfungera.dir/Memory.cpp.obj: CMakeFiles/cppfungera.dir/includes_CXX.rsp
-CMakeFiles/cppfungera.dir/Memory.cpp.obj: ../Memory.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\kenticent\programming\cppfungera\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/cppfungera.dir/Memory.cpp.obj"
-	C:\msys64\mingw64\bin\g++.exe  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\cppfungera.dir\Memory.cpp.obj -c C:\Users\kenticent\programming\cppfungera\Memory.cpp
-
-CMakeFiles/cppfungera.dir/Memory.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/cppfungera.dir/Memory.cpp.i"
-	C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\kenticent\programming\cppfungera\Memory.cpp > CMakeFiles\cppfungera.dir\Memory.cpp.i
-
-CMakeFiles/cppfungera.dir/Memory.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/cppfungera.dir/Memory.cpp.s"
-	C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\kenticent\programming\cppfungera\Memory.cpp -o CMakeFiles\cppfungera.dir\Memory.cpp.s
-
-CMakeFiles/cppfungera.dir/Organism.cpp.obj: CMakeFiles/cppfungera.dir/flags.make
-CMakeFiles/cppfungera.dir/Organism.cpp.obj: CMakeFiles/cppfungera.dir/includes_CXX.rsp
-CMakeFiles/cppfungera.dir/Organism.cpp.obj: ../Organism.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\kenticent\programming\cppfungera\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/cppfungera.dir/Organism.cpp.obj"
-	C:\msys64\mingw64\bin\g++.exe  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\cppfungera.dir\Organism.cpp.obj -c C:\Users\kenticent\programming\cppfungera\Organism.cpp
-
-CMakeFiles/cppfungera.dir/Organism.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/cppfungera.dir/Organism.cpp.i"
-	C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\kenticent\programming\cppfungera\Organism.cpp > CMakeFiles\cppfungera.dir\Organism.cpp.i
-
-CMakeFiles/cppfungera.dir/Organism.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/cppfungera.dir/Organism.cpp.s"
-	C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\kenticent\programming\cppfungera\Organism.cpp -o CMakeFiles\cppfungera.dir\Organism.cpp.s
-
 # Object files for target cppfungera
 cppfungera_OBJECTS = \
-"CMakeFiles/cppfungera.dir/main.cpp.obj" \
-"CMakeFiles/cppfungera.dir/Memory.cpp.obj" \
-"CMakeFiles/cppfungera.dir/Organism.cpp.obj"
+"CMakeFiles/cppfungera.dir/main.cpp.obj"
 
 # External object files for target cppfungera
 cppfungera_EXTERNAL_OBJECTS =
 
 cppfungera.exe: CMakeFiles/cppfungera.dir/main.cpp.obj
-cppfungera.exe: CMakeFiles/cppfungera.dir/Memory.cpp.obj
-cppfungera.exe: CMakeFiles/cppfungera.dir/Organism.cpp.obj
 cppfungera.exe: CMakeFiles/cppfungera.dir/build.make
 cppfungera.exe: PDCurses/pdcurses/libpdcurses.a
 cppfungera.exe: CMakeFiles/cppfungera.dir/linklibs.rsp
 cppfungera.exe: CMakeFiles/cppfungera.dir/objects1.rsp
 cppfungera.exe: CMakeFiles/cppfungera.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Users\kenticent\programming\cppfungera\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable cppfungera.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Users\kenticent\programming\cppfungera\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable cppfungera.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\cppfungera.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
