@@ -1,6 +1,0 @@
-C:/Users/kenticent/programming/cppfungera/cmake-build-debug/CMakeFiles/cppfungera.dir
-C:/Users/kenticent/programming/cppfungera/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/kenticent/programming/cppfungera/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-C:/Users/kenticent/programming/cppfungera/cmake-build-debug/PDCurses/pdcurses/CMakeFiles/pdcurses.dir
-C:/Users/kenticent/programming/cppfungera/cmake-build-debug/PDCurses/pdcurses/CMakeFiles/edit_cache.dir
-C:/Users/kenticent/programming/cppfungera/cmake-build-debug/PDCurses/pdcurses/CMakeFiles/rebuild_cache.dir
