@@ -3,7 +3,7 @@ project(cppfungera)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(cppfungera main.cpp)
+add_executable(cppfungera main.cpp Cell.h Memory.h App.cpp App.h Queue.h Memory.cpp)
 
 include_directories(PDCurses)
 
