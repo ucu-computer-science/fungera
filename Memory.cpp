@@ -1,5 +1,5 @@
-#include <iostream>
 #include "Memory.h"
+#include <fstream>
 
 std::size_t Memory::load_genome(const std::string &file_name,
                                 std::size_t begin_i, std::size_t begin_j,

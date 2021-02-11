@@ -16,12 +16,14 @@ public:
         return &queue;
     }
 
-    void execute_all() { for (Organism o : organisms) o.execute(); }
+    void push_back(Organism *organism) { organisms_.push_back(organism); }
+
+    void execute_all() { for (Organism *o : organisms_) o->execute(); }
 
 protected:
     Queue() = default;
 
-    std::vector<Organism> organisms;
+    std::vector<Organism *> organisms_;
 };
 
 #endif //CPPFUNGERA_QUEUE_H

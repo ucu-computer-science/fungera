@@ -25,12 +25,7 @@ public:
     void run();
 
 protected:
-    App()
-    {
-        initscr();
-
-        getmaxyx(stdscr, max_y_, max_x_);
-    }
+    App();
 
     void draw_mem();
 

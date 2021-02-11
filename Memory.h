@@ -3,8 +3,8 @@
 
 #include "Cell.h"
 #include <cstddef>
+#include <stdexcept>
 #include <string>
-#include <fstream>
 
 class Memory {
 public:
@@ -25,6 +25,10 @@ public:
         cells_ = new Cell[nlines*ncols];
     }
 
+    std::size_t get_nlines() { return nlines_; }
+
+    std::size_t get_ncols() { return ncols_; }
+
     char &operator()(std::size_t i, std::size_t j)
     {
         if (i >= nlines_ || j >= ncols_)
@@ -37,6 +41,11 @@ public:
         if (i >= nlines_ || j >= ncols_)
             throw std::out_of_range("Memory::operator()");
         return cells_[i*ncols_+j].contents;
+    }
+
+    bool is_free_cell(std::size_t i, std::size_t j)
+    {
+        return cells_[i*ncols_+j].is_free;
     }
 
     bool is_free_region(std::size_t nlines, std::size_t ncols,
