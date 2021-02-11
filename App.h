@@ -16,12 +16,6 @@ public:
         return &app;
     }
 
-    void init(std::size_t begin_i, std::size_t begin_j)
-    {
-        begin_i_ = begin_i;
-        begin_j_ = begin_j;
-    }
-
     void run();
 
 protected:

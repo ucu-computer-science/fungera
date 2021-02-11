@@ -1,6 +1,9 @@
 #include "App.h"
 #include "Organism.h"
 #include "Queue.h"
+#include <iostream>
+
+using namespace std;
 
 App::App()
 {
@@ -11,6 +14,9 @@ App::App()
     begin_i_ = 2500;
     begin_j_ = 2500;
     Organism organism(nlines, ncols, begin_i_, begin_j_);
+    for (int i = 0; i < 1000; ++i) {
+        organism.exec();
+    }
 
     initscr();
 

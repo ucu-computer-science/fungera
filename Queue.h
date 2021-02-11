@@ -18,7 +18,7 @@ public:
 
     void push_back(Organism *organism) { organisms_.push_back(organism); }
 
-    void execute_all() { for (Organism *o : organisms_) o->execute(); }
+    void exec_all() { for (Organism *o : organisms_) o->exec(); }
 
 protected:
     Queue() = default;

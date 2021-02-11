@@ -77,6 +77,7 @@ protected:
     // Do not initialize the members
     Memory() {}
 
+    // TODO: Name this fucntion properly
     void f(std::size_t nlines, std::size_t ncols,
            std::size_t begin_i, std::size_t begin_j,
            bool is_free)
