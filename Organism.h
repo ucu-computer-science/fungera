@@ -11,6 +11,7 @@ public:
     Organism(std::array<std::size_t, 2> size,
              std::array<std::size_t, 2> begin);
 
+    /* Execute the operation at the current position of the IP */
     void exec()
     {
         (this->*map1_.at(f(0)))();
@@ -18,19 +19,22 @@ public:
     }
 
 private:
-    /* Get the location of the instruction pointer in direction vector
+    /* Get the location of the instruction pointer in the direction v_
      * multiplied by scalar i */
     std::array<std::size_t, 2> get_ip2(std::size_t i) {
         return {ip_[0]+i*v_[1], ip_[1]+i*v_[0]};
     }
 
+    /* Fetch the ith opcode in the direction v_ */
     char f(std::size_t i) {
         auto ip2 = get_ip2(i);
         return (*Memory::get_instance())(ip2[0], ip2[1]);
     }
 
+    /* Do nothing */
     void nop() {}
 
+    /* Set the direction v_ */
     void up() { v_ = {0, -1}; }
 
     void down() { v_ = {0, 1}; }
@@ -39,10 +43,14 @@ private:
 
     void right() { v_ = {1, 0}; }
 
+    /* Find the pattern complementary to the given one and place the
+     * location of its end into the register */
     void find_pattern();
 
+    /* The analog of if-else constructions in other languages */
     void if_zero();
 
+    /* Set the values of the registers */
     void zero() { regs_.at(f(1)) = {0, 0}; }
 
     void one() { regs_.at(f(1)) = {1, 1}; }
@@ -69,12 +77,15 @@ private:
         }
     }
 
+    /* Subtract one register from the second one and place the result
+     * into the third one */
     void sub()
     {
         auto r1 = regs_.at(f(1)), r2 = regs_.at(f(2));
         regs_.at(f(3)) = {r1[0]-r2[0], r1[1]-r2[1]};
     }
 
+    /* Place the array opcode into the register */
     void read()
     {
         auto r1 = regs_.at(f(1));
@@ -82,6 +93,7 @@ private:
         regs_.at(f(2)) = {opcode[0], opcode[1]};
     }
 
+    /* Write the char opcode to the cell */
     void write()
     {
         // We don't consider writing with zero child size an error
@@ -95,8 +107,10 @@ private:
         }
     }
 
+    /* Start self-replication */
     void alloc_child();
 
+    /* End self-replication creating a new organism */
     void split_child();
 
     // TODO: Add configurable stack size

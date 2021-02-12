@@ -70,7 +70,6 @@ Organism::Organism(std::array<std::size_t, 2> size,
     Queue::get_instance()->push_back(this);
 }
 
-/* Find the complementary pattern to the given one */
 void Organism::find_pattern()
 {
     char c1 = f(1);
@@ -99,7 +98,10 @@ void Organism::find_pattern()
     }
 }
 
-/* The analog of if-else construction in other languages. */
+// This function is called if_not_zero() in the Python version, which
+// doesn't make sense if you look at it as "if condition then this else
+// this", therefore it's been renamed. Also take note that the IP
+// advances on one additional position after the execution
 void Organism::if_zero()
 {
     char c;
@@ -141,6 +143,7 @@ void Organism::split_child()
     if (child_size_[0] != 0 && child_size_[1] != 0) {
         new Organism(child_size_, child_begin_);
         child_size_ = {0, 0};
-        // Don't set child_begin_ to 0
+        // Don't set child_begin_ to 0, because no checks for it are
+        // made
     }
 }

@@ -65,6 +65,7 @@ public:
         f(n, begin, true);
     }
 
+    /* Load the genome into the memory and return its size */
     std::array<std::size_t, 2> load_genome(const std::string &file_name,
                                            std::array<std::size_t, 2> begin);
 
@@ -72,10 +73,11 @@ protected:
     // Do not initialize the members
     Memory() {}
 
+    /* Set the freedom of the region of the memory */
     void f(std::array<std::size_t, 2> size, std::array<std::size_t, 2> begin,
            bool is_free)
     {
-        // We assume that is_free_region() has been called
+        // Assuming that is_free_region() has been called
         for (std::size_t i = begin[0]; i < begin[0] + size[0]; ++i)
             for (std::size_t j = begin[1]; j < begin[1] + size[1]; ++j)
                 cells_[i*ncols_+j].is_free = is_free;
