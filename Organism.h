@@ -8,21 +8,24 @@
 
 class Organism {
 public:
-    Organism(std::size_t nlines, std::size_t ncols,
-             std::size_t begin_i, std::size_t begin_j);
+    Organism(std::array<std::size_t, 2> size,
+             std::array<std::size_t, 2> begin);
 
-    void exec();
+    void exec()
+    {
+        (this->*map1_.at(f(0)))();
+        ip_ = get_ip2(1);
+    }
 
-//private:
-    // Get the location of the instruction pointer in direction vector v
-    // multiplied by scalar i
+private:
+    /* Get the location of the instruction pointer in direction vector
+     * multiplied by scalar i */
     std::array<std::size_t, 2> get_ip2(std::size_t i) {
         return {ip_[0]+i*v_[1], ip_[1]+i*v_[0]};
     }
 
-    // TODO: Name this function properly
     char f(std::size_t i) {
-        std::array<std::size_t, 2> ip2 = get_ip2(i);
+        auto ip2 = get_ip2(i);
         return (*Memory::get_instance())(ip2[0], ip2[1]);
     }
 
@@ -38,16 +41,20 @@ public:
 
     void find_pattern();
 
-    void if_non_zero();
+    void if_zero();
+
+    void zero() { regs_.at(f(1)) = {0, 0}; }
+
+    void one() { regs_.at(f(1)) = {1, 1}; }
 
     void inc()
     {
         char c;
         if ((c = f(1)) == 'x' || c == 'y')
-            ++regs_[f(2)][(c == 'x') ? 0 : 1];
+            ++regs_.at(f(2))[(c == 'x') ? 0 : 1];
         else {
-            ++regs_[c][0];
-            ++regs_[c][1];
+            ++regs_.at(c)[0];
+            ++regs_.at(c)[1];
         }
     }
 
@@ -55,42 +62,44 @@ public:
     {
         char c;
         if ((c = f(1)) == 'x' || c == 'y')
-            --regs_[f(2)][(c == 'x') ? 0 : 1];
+            --regs_.at(f(2))[(c == 'x') ? 0 : 1];
         else {
-            --regs_[c][0];
-            --regs_[c][1];
+            --regs_.at(c)[0];
+            --regs_.at(c)[1];
         }
     }
 
-    void zero() { regs_.at(f(1)) = {0, 0}; }
-
-    void one() { regs_.at(f(1)) = {1, 1}; }
-
     void sub()
     {
-        char c1 = f(1), c2 = f(2), c3 = f(3);
-        regs_.at(c3) = {regs_.at(c1)[0]-regs_.at(c2)[0],
-                        regs_.at(c1)[1]-regs_.at(c2)[0]};
+        auto r1 = regs_.at(f(1)), r2 = regs_.at(f(2));
+        regs_.at(f(3)) = {r1[0]-r2[0], r1[1]-r2[1]};
     }
 
     void read()
     {
-        char c1 = f(1), c2 = f(2);
-        std::size_t i = regs_[c1][0], j = regs_[c1][1];
-        auto opcode = map2_.at((*Memory::get_instance())(i, j));
-        regs_[c2] = {opcode[0], opcode[1]};
+        auto r1 = regs_.at(f(1));
+        auto opcode = map2_.at((*Memory::get_instance())(r1[0], r1[1]));
+        regs_.at(f(2)) = {opcode[0], opcode[1]};
     }
 
     void write()
     {
-        char c1 = f(1), c2 = f(2);
-        for (const auto &pair : map2_)
-            if (regs_[c2][0] == pair.second[0] && regs_[c2][1] == pair.second[1]) {
-                (*Memory::get_instance())(regs_[c1][0], regs_[c1][1]) = pair.first;
-                break;
-            }
+        // We don't consider writing with zero child size an error
+        if (child_size_[0] != 0 && child_size_[1] != 0) {
+            auto r1 = regs_.at(f(1)), r2 = regs_.at(f(2));
+            for (const auto &pair : map2_)
+                if (r2[0] == pair.second[0] && r2[1] == pair.second[1]) {
+                    (*Memory::get_instance())(r1[0], r1[1]) = pair.first;
+                    break;
+                }
+        }
     }
 
+    void alloc_child();
+
+    void split_child();
+
+    // TODO: Add configurable stack size
     void push() { stack_.push(regs_.at(f(1))); }
 
     void pop()
@@ -99,16 +108,10 @@ public:
         stack_.pop();
     }
 
-    void alloc_child();
-
-    void split_child();
-
     using operation = void (Organism::*)();
     static const std::unordered_map<char, operation> map1_;
     static const std::unordered_map<char, std::array<unsigned char, 2>> map2_;
-    static unsigned norganisms_;
-    const unsigned No_ = norganisms_;
-    const std::size_t nlines_, ncols_;
+    const std::array<std::size_t, 2> size_;
     std::array<std::size_t, 2> ip_;
     std::array<signed char, 2> v_{1, 0};
     std::unordered_map<char, std::array<std::size_t, 2>> regs_{
@@ -117,8 +120,9 @@ public:
             {'c', {0, 0}},
             {'d', {0, 0}}
     };
+    std::array<std::size_t, 2> child_size_{0};
+    std::array<std::size_t, 2> child_begin_{0};
     std::stack<std::array<std::size_t, 2>> stack_;
-    unsigned nerrors_ = 0;
 };
 
 #endif //CPPFUNGERA_ORGANISM_H

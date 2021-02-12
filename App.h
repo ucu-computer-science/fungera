@@ -23,6 +23,14 @@ protected:
 
     void draw_mem();
 
+    void up() { --begin_i_; };
+
+    void down() { ++begin_i_; };
+
+    void left() { --begin_j_; };
+
+    void right() { ++begin_j_; };
+
     int max_y_;
     int max_x_;
     std::size_t begin_i_;

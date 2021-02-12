@@ -2,6 +2,7 @@
 #define CPPFUNGERA_MEMORY_H
 
 #include "Cell.h"
+#include <array>
 #include <cstddef>
 #include <stdexcept>
 #include <string>
@@ -43,47 +44,40 @@ public:
         return cells_[i*ncols_+j].contents;
     }
 
-    bool is_free_cell(std::size_t i, std::size_t j)
+    bool is_free_region(std::array<std::size_t, 2> size, std::array<std::size_t, 2> begin)
     {
-        return cells_[i*ncols_+j].is_free;
-    }
-
-    bool is_free_region(std::size_t nlines, std::size_t ncols,
-                        std::size_t begin_i, std::size_t begin_j)
-    {
-        for (std::size_t i = begin_i; i < begin_i+nlines; ++i)
-            for (std::size_t j = begin_j; j < begin_j+ncols; ++j)
+        if (begin[0] >= nlines_ || begin[1] >= ncols_
+            || begin[0]+size[0] >= nlines_ || begin[1]+size[1] >= ncols_)
+            throw std::out_of_range("Memory::is_free_region()");
+        for (std::size_t i = begin[0]; i < begin[0]+size[0]; ++i)
+            for (std::size_t j = begin[1]; j < begin[1]+size[1]; ++j)
                 if (!cells_[i*ncols_+j].is_free) return false;
         return true;
     }
 
-    void alloc(std::size_t nlines, std::size_t ncols,
-               std::size_t begin_i, std::size_t begin_j)
+    void alloc(std::array<std::size_t, 2> n, std::array<std::size_t, 2> begin)
     {
-        f(nlines, ncols, begin_i, begin_j, false);
+        f(n, begin, false);
     }
 
-    void free(std::size_t nlines, std::size_t ncols,
-              std::size_t begin_i, std::size_t begin_j)
+    void free(std::array<std::size_t, 2> n, std::array<std::size_t, 2> begin)
     {
-        f(nlines, ncols, begin_i, begin_j, true);
+        f(n, begin, true);
     }
 
-    std::size_t load_genome(const std::string &file_name,
-                            std::size_t begin_i, std::size_t begin_j,
-                            std::size_t &ncols);
+    std::array<std::size_t, 2> load_genome(const std::string &file_name,
+                                           std::array<std::size_t, 2> begin);
 
 protected:
     // Do not initialize the members
     Memory() {}
 
-    // TODO: Name this fucntion properly
-    void f(std::size_t nlines, std::size_t ncols,
-           std::size_t begin_i, std::size_t begin_j,
+    void f(std::array<std::size_t, 2> size, std::array<std::size_t, 2> begin,
            bool is_free)
     {
-        for (std::size_t i = begin_i; i < begin_i+nlines; ++i)
-            for (std::size_t j = begin_j; j < begin_j+ncols; ++j)
+        // We assume that is_free_region() has been called
+        for (std::size_t i = begin[0]; i < begin[0] + size[0]; ++i)
+            for (std::size_t j = begin[1]; j < begin[1] + size[1]; ++j)
                 cells_[i*ncols_+j].is_free = is_free;
     }
 

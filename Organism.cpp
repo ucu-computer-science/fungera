@@ -3,8 +3,8 @@
 #include <unordered_map>
 #include <vector>
 #include <stdexcept>
-#include <iostream>
 
+#define min(x, y) ((x) < (y)) ? (x) : (y)
 #define max(x, y) ((x) > (y)) ? (x) : (y)
 
 using operation = void (Organism::*)();
@@ -22,7 +22,7 @@ const std::unordered_map<char, operation> Organism::map1_{
         {'>', &Organism::right},
         {'<', &Organism::left},
         {'&', &Organism::find_pattern},
-        {'?', &Organism::if_non_zero},
+        {'?', &Organism::if_zero},
         {'1', &Organism::one},
         {'0', &Organism::zero},
         {'-', &Organism::dec},
@@ -36,6 +36,7 @@ const std::unordered_map<char, operation> Organism::map1_{
         {'P', &Organism::pop}
 };
 const std::unordered_map<char, std::array<unsigned char, 2>> Organism::map2_{
+        {'.', {0, 0}},
         {':', {0, 1}},
         {'a', {1, 0}},
         {'b', {1, 1}},
@@ -61,25 +62,12 @@ const std::unordered_map<char, std::array<unsigned char, 2>> Organism::map2_{
         {'S', {8, 0}},
         {'P', {8, 1}}
 };
-unsigned Organism::norganisms_ = 1;
 
-Organism::Organism(std::size_t nlines, std::size_t ncols,
-                   std::size_t begin_i, std::size_t begin_j):
-    nlines_(nlines), ncols_(ncols), ip_({begin_i, begin_j})
+Organism::Organism(std::array<std::size_t, 2> size,
+                   std::array<std::size_t, 2> begin):
+    size_(size), ip_(begin)
 {
-    Memory::get_instance()->alloc(nlines, ncols, begin_j, begin_j);
     Queue::get_instance()->push_back(this);
-    ++norganisms_;
-}
-
-void Organism::exec()
-{
-    try {
-        (this->*map1_.at(f(0)))();
-    } catch (std::out_of_range &e_obj) {
-        ++nerrors_;
-    }
-    ip_ = get_ip2(1);
 }
 
 /* Find the complementary pattern to the given one */
@@ -91,7 +79,7 @@ void Organism::find_pattern()
         throw std::out_of_range("Organism::find_pattern()");
     std::vector<char> pattern;
     std::size_t i;
-    const std::size_t max_side = max(nlines_, ncols_);
+    const std::size_t max_side = max(size_[0], size_[1]);
     for (i = 2; i < max_side; ++i) {
         char c2;
         if ((c2 = f(i)) == '.' || c2 == ':')
@@ -111,10 +99,8 @@ void Organism::find_pattern()
     }
 }
 
-/* The analog of if-else construction in other languages. Warning: after
- * the execution of this operation the IP will advance on one more
- * position */
-void Organism::if_non_zero()
+/* The analog of if-else construction in other languages. */
+void Organism::if_zero()
 {
     char c;
     if ((c = f(1)) == 'x' || c == 'y') {
@@ -123,7 +109,7 @@ void Organism::if_non_zero()
         else
             ip_ = get_ip2(2);
     } else
-        if (regs_.at(c)[0] && regs_.at(c)[1])
+        if (regs_.at(c)[0] || regs_.at(c)[1])
             ip_ = get_ip2(2);
         else
             ip_ = get_ip2(1);
@@ -131,18 +117,30 @@ void Organism::if_non_zero()
 
 void Organism::alloc_child()
 {
-    std::array<std::size_t, 2> size = regs_[f(1)];
-    bool is_free_region_found = false;
-    for (std::size_t i = 2; i < 5000; ++i) {
-        if (Memory::get_instance()->is_free_region(size[0], size[1], get_ip2(i)[0], get_ip2(i)[1])) {
-            std::array<std::size_t, 2> child_begin = get_ip2(i);
-            regs_.at(f(2)) = child_begin;
-            break;
+    auto child_size = regs_.at(f(1));
+    char c2 = f(2);
+    if (c2 != 'a' && c2 != 'b' && c2 != 'c' && c2 != 'd')
+        throw std::out_of_range("Organism::alloc_child()");
+    Memory *memory = Memory::get_instance();
+    if (child_size[0] != 0 && child_size[1] != 0) {
+        for (std::size_t i = 2; i < min(memory->get_nlines(), memory->get_ncols()); ++i) {
+            auto child_begin = get_ip2(i);
+            if (memory->is_free_region(child_size, child_begin)) {
+                child_size_ = child_size;
+                child_begin_ = child_begin;
+                regs_.at(c2) = child_begin;
+                memory->alloc(child_size, child_begin);
+                break;
+            }
         }
     }
 }
 
 void Organism::split_child()
 {
-
+    if (child_size_[0] != 0 && child_size_[1] != 0) {
+        new Organism(child_size_, child_begin_);
+        child_size_ = {0, 0};
+        // Don't set child_begin_ to 0
+    }
 }

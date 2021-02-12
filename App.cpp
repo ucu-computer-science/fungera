@@ -1,34 +1,55 @@
 #include "App.h"
 #include "Organism.h"
 #include "Queue.h"
-#include <iostream>
-
-using namespace std;
 
 App::App()
 {
     Memory *memory = Memory::get_instance();
     memory->init(5000, 5000);
-    std::size_t nlines, ncols;
-    nlines = memory->load_genome("initial.gen", 2500, 2500, ncols);
     begin_i_ = 2500;
     begin_j_ = 2500;
-    Organism organism(nlines, ncols, begin_i_, begin_j_);
-    for (int i = 0; i < 1000; ++i) {
-        organism.exec();
-    }
+    auto size = memory->load_genome("initial.gen", {begin_i_, begin_j_});
+    Organism organism(size, {begin_i_, begin_j_});
 
     initscr();
 
+    noecho();
+    cbreak();
+    nodelay(stdscr, true);
+
     getmaxyx(stdscr, max_y_, max_x_);
+
+    for (;;) {
+        int c;
+        while ((c = getch()) != ERR)
+            switch (c) {
+            case 'w':
+            case 'W':
+                up();
+                break;
+            case 'a':
+            case 'A':
+                left();
+                break;
+            case 's':
+            case 'S':
+                down();
+                break;
+            case 'd':
+            case 'D':
+                right();
+                break;
+            default:
+                break;
+            }
+        Queue::get_instance()->exec_all();
+        draw_mem();
+    }
 }
 
 void App::run()
 {
-    draw_mem();
 
-    getch();
-    endwin();
 }
 
 void App::draw_mem()
