@@ -65,7 +65,6 @@ public:
         f(n, begin, true);
     }
 
-    /* Load the genome into the memory and return its size */
     std::array<std::size_t, 2> load_genome(const std::string &file_name,
                                            std::array<std::size_t, 2> begin);
 

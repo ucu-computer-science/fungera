@@ -3,9 +3,9 @@ project(cppfungera)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(cppfungera main.cpp Cell.h Memory.cpp Memory.h Organism.cpp Organism.h Queue.h App.cpp App.h)
+add_executable(cppfungera src/main.cpp src/Cell.h src/Memory.cpp src/Memory.h src/Organism.cpp src/Organism.h src/Queue.h src/App.cpp src/App.h)
 
-include_directories(PDCurses)
+include_directories(libs/PDCurses)
 
-add_subdirectory(PDCurses/pdcurses)
-target_link_libraries(cppfungera PRIVATE pdcurses)
+#add_subdirectory(libs/PDCurses/pdcurses)
+target_link_libraries(cppfungera PRIVATE ncurses)
