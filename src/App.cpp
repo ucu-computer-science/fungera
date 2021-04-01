@@ -1,6 +1,8 @@
 #include "App.h"
 #include "Organism.h"
 #include "Queue.h"
+#include <algorithm>
+#include <iostream>
 
 App::App()
 {
@@ -14,6 +16,10 @@ App::App()
     initscr();
     noecho();
     timeout(0);
+
+    start_color();
+
+    init_pair(1, COLOR_BLACK, COLOR_WHITE);
 
     getmaxyx(stdscr, max_y_, max_x_);
 
@@ -37,10 +43,12 @@ App::App()
                 case 'D':
                     right();
                     break;
+                case 'x':
+                case 'X':
+                    Queue::get_instance()->exec_all();
                 default:
                     break;
             }
-        Queue::get_instance()->exec_all();
         draw_mem();
         refresh();
     }
@@ -53,12 +61,25 @@ void App::run()
 
 void App::draw_mem()
 {
+    // This is horrible
+    std::vector<std::array<std::size_t, 2>> ips;
+    const auto organisms = Queue::get_instance()->get_organisms();
+    ips.reserve(organisms.size());
+    for (const auto &o : organisms)
+        ips.emplace_back(o->get_ip());
+
     std::size_t i = begin_i_;
     for (int y = 0; y < max_y_; ++y) {
         std::size_t j = begin_j_;
         int x = 0;
         move(y, x);
-        for ( ; x < max_x_; ++x)
+        for ( ; x < max_x_; ++x) {
+            const std::array<std::size_t, 2> coord{i+y, j+x};
+            if (std::find(ips.begin(), ips.end(), coord) != ips.end())
+                attron(COLOR_PAIR(1));
             addch((*Memory::get_instance())(i+y, j+x));
+            if (std::find(ips.begin(), ips.end(), coord) != ips.end())
+                attroff(COLOR_PAIR(1));
+        }
     }
 }

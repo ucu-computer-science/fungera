@@ -6,6 +6,8 @@
 #include <unordered_map>
 #include <stack>
 
+typedef std::array<std::size_t, 2> vector_t;
+
 class Organism {
 public:
     Organism(std::array<std::size_t, 2> size,
@@ -16,6 +18,11 @@ public:
     {
         (this->*map1_.at(f(0)))();
         ip_ = get_ip2(1);
+    }
+
+    vector_t get_ip()
+    {
+        return ip_;
     }
 
 private:

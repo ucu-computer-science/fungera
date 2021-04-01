@@ -20,6 +20,11 @@ public:
 
     void exec_all() { for (Organism *o : organisms_) o->exec(); }
 
+    std::vector<Organism *> get_organisms()
+    {
+        return organisms_;
+    }
+
 protected:
     Queue() = default;
 
