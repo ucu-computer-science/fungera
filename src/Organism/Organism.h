@@ -1,12 +1,23 @@
 #ifndef CPPFUNGERA_ORGANISM_H
 #define CPPFUNGERA_ORGANISM_H
 
-#include "Memory.h"
+#include "../Memory/Memory.h"
 #include <cstddef>
 #include <unordered_map>
 #include <stack>
+#include <iostream>
 
-typedef std::array<std::size_t, 2> vector_t;
+struct status_t {
+    const std::array<std::size_t, 2> &begin;
+    const std::array<std::size_t, 2> &size;
+    const std::array<std::size_t, 2> &child_begin;
+    const std::array<std::size_t, 2> &child_size;
+    const std::array<std::size_t, 2> &ip;
+    const std::array<signed char, 2> &velocity;
+    const std::unordered_map<char, size_t_arr> &regs;
+    const std::stack<size_t_arr> &stack;
+    const unsigned &id;
+};
 
 class Organism {
 public:
@@ -20,9 +31,9 @@ public:
         ip_ = get_ip2(1);
     }
 
-    vector_t get_ip()
+    status_t get_status() const
     {
-        return ip_;
+        return status_t{begin, size_, child_begin_, child_size_, ip_, v_, regs_, stack_, id};
     }
 
 private:
@@ -130,19 +141,30 @@ private:
     }
 
     using operation = void (Organism::*)();
+
+    static unsigned cur_id;
     static const std::unordered_map<char, operation> map1_;
     static const std::unordered_map<char, std::array<unsigned char, 2>> map2_;
+
+    const unsigned id;
+
+    const std::array<std::size_t, 2> begin;
     const std::array<std::size_t, 2> size_;
+
     std::array<std::size_t, 2> ip_;
+
     std::array<signed char, 2> v_{1, 0};
+
     std::unordered_map<char, std::array<std::size_t, 2>> regs_{
             {'a', {0, 0}},
             {'b', {0, 0}},
             {'c', {0, 0}},
             {'d', {0, 0}}
     };
+
     std::array<std::size_t, 2> child_size_{0};
     std::array<std::size_t, 2> child_begin_{0};
+
     std::stack<std::array<std::size_t, 2>> stack_;
 };
 

@@ -3,9 +3,15 @@ project(cppfungera)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(cppfungera src/main.cpp src/Cell.h src/Memory.cpp src/Memory.h src/Organism.cpp src/Organism.h src/Queue.h src/App.cpp src/App.h)
+file(GLOB_RECURSE SRC "src/*.cpp" "src/*.h")
 
-include_directories(libs/PDCurses)
+add_executable(cppfungera ${SRC})
 
-#add_subdirectory(libs/PDCurses/pdcurses)
-target_link_libraries(cppfungera PRIVATE ncurses)
+if(WIN32 OR MSVC)
+    add_subdirectory(libs/PDCurses)
+    target_link_libraries(cppfungera PRIVATE PDCurses)
+else()
+    # cmake -G"Unix Makefiles" -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/libncurses.so ..
+	find_library(ncurses REQUIRED)
+    target_link_libraries(cppfungera PRIVATE ncurses)
+endif()

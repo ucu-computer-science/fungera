@@ -1,5 +1,5 @@
 #include "Organism.h"
-#include "Queue.h"
+#include "../Queue.h"
 #include <unordered_map>
 #include <vector>
 #include <stdexcept>
@@ -8,6 +8,8 @@
 #define max(x, y) ((x) > (y)) ? (x) : (y)
 
 using operation = void (Organism::*)();
+
+unsigned Organism::cur_id = 0;
 const std::unordered_map<char, operation> Organism::map1_{
         {'.', &Organism::nop},
         {':', &Organism::nop},
@@ -64,8 +66,8 @@ const std::unordered_map<char, std::array<unsigned char, 2>> Organism::map2_{
 };
 
 Organism::Organism(std::array<std::size_t, 2> size,
-                   std::array<std::size_t, 2> begin):
-    size_(size), ip_(begin)
+                   std::array<std::size_t, 2> begin_):
+    size_(size), ip_(begin_), id(cur_id++), begin(begin_)
 {
     Queue::get_instance()->push_back(this);
 }
@@ -120,9 +122,11 @@ void Organism::if_zero()
 void Organism::alloc_child()
 {
     auto child_size = regs_.at(f(1));
+
     char c2 = f(2);
     if (c2 != 'a' && c2 != 'b' && c2 != 'c' && c2 != 'd')
         throw std::out_of_range("Organism::alloc_child()");
+
     Memory *memory = Memory::get_instance();
     if (child_size[0] != 0 && child_size[1] != 0) {
         for (std::size_t i = 2; i < min(memory->get_nlines(), memory->get_ncols()); ++i) {
