@@ -1,6 +1,6 @@
 # C++ Fungera
 
-![version](https://img.shields.io/badge/version-0.1-informational)
+![version](https://img.shields.io/badge/version-0.2-informational)
 
 This is a C++ port of a Python program for artificial life research.
 
