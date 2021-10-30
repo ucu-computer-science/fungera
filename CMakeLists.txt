@@ -12,6 +12,6 @@ if(WIN32 OR MSVC)
     target_link_libraries(cppfungera PRIVATE PDCurses)
 else()
     # cmake -G"Unix Makefiles" -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/libncurses.so ..
-	find_library(ncurses REQUIRED)
+    # 	find_library(ncurses REQUIRED)
     target_link_libraries(cppfungera PRIVATE ncurses)
 endif()

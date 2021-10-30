@@ -26,7 +26,7 @@ void draw_status(WINDOW *win,
 void draw_ctrls(WINDOW *win);
 void my_mvwaddstr(WINDOW *win, int y, int x, const std::string &str);
 
-int main()
+int main(int argc, char **argv)
 {
     Memory *memory = Memory::get_instance();
     memory->init(5000, 5000);
@@ -34,7 +34,7 @@ int main()
     std::size_t begin_i = 2500;
     std::size_t begin_j = 2500;
 
-    auto size = memory->load_genome("../initial.gen", {begin_i, begin_j});
+    auto size = memory->load_genome(*(argv+1), {begin_i, begin_j});
 
     Organism org(size, {begin_i, begin_j});
     auto *cur_org = &org;
