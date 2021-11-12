@@ -3,6 +3,7 @@
 #include "Queue.h"
 #include "curses.h"
 #include <algorithm>
+#include "Snapshot.h"
 
 #define BOLD_PARENT 1
 #define BOLD_CHILD 2
@@ -34,7 +35,15 @@ int main(int argc, char **argv)
     std::size_t begin_i = 2500;
     std::size_t begin_j = 2500;
 
-    auto size = memory->load_genome(*(argv+1), {begin_i, begin_j});
+    size_t_arr size;
+    if(atoi(argv[1])){
+        std::cout << "Load snapshot is not yet implemented" << std::endl;
+        exit(1);
+        Snapshot::load_snapshot(*(argv+2));
+    }
+    else{
+        size = memory->load_genome(*(argv+2), {begin_i, begin_j});
+    }
 
     Organism org(size, {begin_i, begin_j});
     auto *cur_org = &org;
@@ -77,18 +86,22 @@ int main(int argc, char **argv)
         int c;
         while ((c = getch()) != ERR) {
             switch (c) {
+            case 'k':
             case 'w':
             case 'W':
                 begin_i--;
                 break;
+            case 'h':
             case 'a':
             case 'A':
                 begin_j--;
                 break;
+            case 'j':
             case 's':
             case 'S':
                 begin_i++;
                 break;
+            case 'l':
             case 'd':
             case 'D':
                 begin_j++;
@@ -100,6 +113,12 @@ int main(int argc, char **argv)
                     cycle_no++;
                 }
                 break;
+
+            case 'o':
+            case 'O':
+                Snapshot::make_snapshot(Queue::get_instance()->get_organisms());
+                break;
+
             case 'n':
             case 'N':
                 cur_org = Queue::get_instance()->next();
