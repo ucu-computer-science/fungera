@@ -39,16 +39,24 @@ public:
     }
 
 private:
-
-private:
     friend class boost::serialization::access;
 
     template<class Archive>
     void serialize(Archive & archive, const unsigned int version){
 
-        archive & BOOST_SERIALIZATION_NVP(ip_);
-        archive & BOOST_SERIALIZATION_NVP(v_);
-        archive & BOOST_SERIALIZATION_NVP(id);
+        archive & begin[0];
+        archive & begin[1];
+        archive & size_[0];
+        archive & size_[1];
+        archive & child_begin_[0];
+        archive & child_begin_[1];
+        archive & child_size_[0];
+        archive & child_size_[1];
+        archive & ip_[0];
+        archive & ip_[1];
+        archive & (int) v_[0];
+        archive & (int) v_[1];
+        archive & id;
     }
     /* Get the location of the instruction pointer in the direction v_
      * multiplied by scalar i */

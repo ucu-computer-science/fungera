@@ -1,0 +1,14 @@
+cmake_minimum_required(VERSION 3.16)
+project(cppfungera)
+
+find_package(Boost REQUIRED serialization program_options)
+include_directories(${Boost_INCLUDE_DIRS})
+
+set(CMAKE_CXX_STANDARD 14)
+
+file(GLOB_RECURSE SRC "snapshot_example.cpp")
+
+add_executable(snapshot_example ${SRC})
+
+target_link_libraries(snapshot_example PRIVATE ncurses ${Boost_LIBRARIES})
+

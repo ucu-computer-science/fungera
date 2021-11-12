@@ -12,7 +12,9 @@ private:
 
     template<class Archive>
     void serialize(Archive & archive, const unsigned int version) {
-        archive & BOOST_SERIALIZATION_NVP(organisms_[0]);
+        for(Organism *o : organisms_){
+            archive & *o;
+        }
     }
 
 public:

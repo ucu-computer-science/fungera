@@ -6,6 +6,8 @@
 #include <iostream>
 #include <fstream>
 
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
 
 #define BOLD_PARENT 1
 #define BOLD_CHILD 2
@@ -117,17 +119,32 @@ int main(int argc, char **argv)
                 break;
 
             case 'o':
-            case 'O':
-                std::string filename = "snapshot.xml";
+            case 'O': {
 
-                std::ofstream out(filename);
+                // create and open a character archive for output
+                std::ofstream ofs("filename");
 
-                boost::archive::xml_oarchive xml_output_archive(out);
+                // save data to archive
+                {
+                    boost::archive::text_oarchive oa(ofs);
+                    // write class instance to archive
+                    oa << *Queue::get_instance();
+                    // archive and stream closed when destructors are called
+                }
 
-                xml_output_archive & BOOST_SERIALIZATION_NVP(*Queue::get_instance());
 
-                out.close();
+                // ... some time later restore the class instance to its orginal state
+                //gps_position newg;
+                //{
+                    //// create and open an archive for input
+                    //std::ifstream ifs("filename");
+                    //boost::archive::text_iarchive ia(ifs);
+                    //// read class state from archive
+                    //ia >> newg;
+                    //// archive and stream closed when destructors are called
+                //}
                 break;
+            }
 
             case 'n':
             case 'N':
