@@ -3,7 +3,9 @@
 #include "Queue.h"
 #include "curses.h"
 #include <algorithm>
-#include "Snapshot.h"
+#include <iostream>
+#include <fstream>
+
 
 #define BOLD_PARENT 1
 #define BOLD_CHILD 2
@@ -39,7 +41,7 @@ int main(int argc, char **argv)
     if(atoi(argv[1])){
         std::cout << "Load snapshot is not yet implemented" << std::endl;
         exit(1);
-        Snapshot::load_snapshot(*(argv+2));
+
     }
     else{
         size = memory->load_genome(*(argv+2), {begin_i, begin_j});
@@ -116,7 +118,15 @@ int main(int argc, char **argv)
 
             case 'o':
             case 'O':
-                Snapshot::make_snapshot(Queue::get_instance()->get_organisms());
+                std::string filename = "snapshot.xml";
+
+                std::ofstream out(filename);
+
+                boost::archive::xml_oarchive xml_output_archive(out);
+
+                xml_output_archive & BOOST_SERIALIZATION_NVP(*Queue::get_instance());
+
+                out.close();
                 break;
 
             case 'n':

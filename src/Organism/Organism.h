@@ -6,6 +6,8 @@
 #include <unordered_map>
 #include <stack>
 #include <iostream>
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
 
 struct status_t {
     const std::array<std::size_t, 2> &begin;
@@ -37,6 +39,17 @@ public:
     }
 
 private:
+
+private:
+    friend class boost::serialization::access;
+
+    template<class Archive>
+    void serialize(Archive & archive, const unsigned int version){
+
+        archive & BOOST_SERIALIZATION_NVP(ip_);
+        archive & BOOST_SERIALIZATION_NVP(v_);
+        archive & BOOST_SERIALIZATION_NVP(id);
+    }
     /* Get the location of the instruction pointer in the direction v_
      * multiplied by scalar i */
     std::array<std::size_t, 2> get_ip2(std::size_t i) {

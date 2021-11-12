@@ -4,7 +4,17 @@
 #include "Organism/Organism.h"
 #include <vector>
 
+
 class Queue {
+
+private:
+    friend class boost::serialization::access;
+
+    template<class Archive>
+    void serialize(Archive & archive, const unsigned int version) {
+        archive & BOOST_SERIALIZATION_NVP(organisms_[0]);
+    }
+
 public:
     Queue(const Queue &other) = delete;
 
