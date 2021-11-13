@@ -6,8 +6,12 @@
 #include <unordered_map>
 #include <stack>
 #include <iostream>
-#include <boost/archive/xml_oarchive.hpp>
-#include <boost/archive/xml_iarchive.hpp>
+#include <fstream>
+
+// include headers that implement a archive in simple text format
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/array.hpp>
 
 struct status_t {
     const std::array<std::size_t, 2> &begin;
@@ -44,18 +48,12 @@ private:
     template<class Archive>
     void serialize(Archive & archive, const unsigned int version){
 
-        archive & begin[0];
-        archive & begin[1];
-        archive & size_[0];
-        archive & size_[1];
-        archive & child_begin_[0];
-        archive & child_begin_[1];
-        archive & child_size_[0];
-        archive & child_size_[1];
-        archive & ip_[0];
-        archive & ip_[1];
-        archive & (int) v_[0];
-        archive & (int) v_[1];
+        archive & begin;
+        archive & size_;
+        archive & child_begin_;
+        archive & child_size_;
+        archive & ip_;
+        archive & v_;
         archive & id;
     }
     /* Get the location of the instruction pointer in the direction v_
