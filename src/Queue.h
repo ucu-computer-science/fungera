@@ -3,18 +3,17 @@
 
 #include "Organism/Organism.h"
 #include <vector>
+#include <boost/serialization/vector.hpp>
 
 
 class Queue {
 
 private:
     friend class boost::serialization::access;
-
     template<class Archive>
-    void serialize(Archive & archive, const unsigned int version) {
-        for(Organism *o : organisms_){
-            archive & *o;
-        }
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & organisms_;
     }
 
 public:
@@ -39,6 +38,10 @@ public:
         if (next_idx == organisms_.size())
             next_idx = 0;
         return organisms_[next_idx++];
+    }
+
+    std::vector<Organism *> get_organisms(){
+        return organisms_;
     }
 
 protected:

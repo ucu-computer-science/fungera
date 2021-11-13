@@ -91,6 +91,8 @@ protected:
 
     std::size_t nlines_;
     std::size_t ncols_;
+
+    // NANI? Why cells are stored as inline object but not as 2D array or something
     Cell *cells_;
 };
 

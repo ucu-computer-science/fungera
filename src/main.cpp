@@ -41,7 +41,19 @@ int main(int argc, char **argv)
 
     size_t_arr size;
     if(atoi(argv[1])){
-        std::cout << "Load snapshot is not yet implemented" << std::endl;
+
+        // ... some time later restore the class instance to its orginal state
+        //Queue::get_instance();
+        //{
+            //// create and open an archive for input
+            //std::ifstream ifs("filename");
+            //boost::archive::text_iarchive ia(ifs);
+            //// read class state from archive
+            //ia >> *Queue::get_instance();
+            //// archive and stream closed when destructors are called
+        //}
+
+        std::cout << "Not implemented" << std::endl;
         exit(1);
 
     }
@@ -128,21 +140,9 @@ int main(int argc, char **argv)
                 {
                     boost::archive::text_oarchive oa(ofs);
                     // write class instance to archive
-                    oa << *Queue::get_instance();
+                    oa << Queue::get_instance();
                     // archive and stream closed when destructors are called
                 }
-
-
-                // ... some time later restore the class instance to its orginal state
-                //gps_position newg;
-                //{
-                    //// create and open an archive for input
-                    //std::ifstream ifs("filename");
-                    //boost::archive::text_iarchive ia(ifs);
-                    //// read class state from archive
-                    //ia >> newg;
-                    //// archive and stream closed when destructors are called
-                //}
                 break;
             }
 
