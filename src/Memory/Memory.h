@@ -9,7 +9,23 @@
 #include <string>
 #include <iostream>
 
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/array.hpp>
+
 class Memory {
+
+private:
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & nlines_;
+        ar & ncols_;
+        for(size_t i = 0; i < nlines_*ncols_; i++){
+            ar & cells_[i];
+        }
+    }
 public:
     Memory(Memory &other) = delete;
 
@@ -27,6 +43,8 @@ public:
         ncols_ = ncols;
         cells_ = new Cell[nlines*ncols];
     }
+
+    Cell* get_cells() const { return cells_; }
 
     size_t get_nlines() const { return nlines_; }
 

@@ -4,7 +4,19 @@
 #include "Organism/Organism.h"
 #include <vector>
 
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/array.hpp>
+
 class Queue {
+private:
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & next_idx;
+        // ar & organisms_;
+    }
 public:
     Queue(const Queue &other) = delete;
 
@@ -27,6 +39,10 @@ public:
         if (next_idx == organisms_.size())
             next_idx = 0;
         return organisms_[next_idx++];
+    }
+
+    std::size_t get_next_idx(){
+        return next_idx;
     }
 
 protected:

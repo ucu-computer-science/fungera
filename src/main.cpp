@@ -4,6 +4,11 @@
 #include "curses.h"
 #include <algorithm>
 
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <fstream>
+#include <ostream>
+
 #define BOLD_PARENT 1
 #define BOLD_CHILD 2
 #define BOLD_IP 3
@@ -29,15 +34,67 @@ void my_mvwaddstr(WINDOW *win, int y, int x, const std::string &str);
 int main(int argc, char **argv)
 {
     Memory *memory = Memory::get_instance();
-    memory->init(5000, 5000);
+    size_t_arr size;
 
-    std::size_t begin_i = 2500;
-    std::size_t begin_j = 2500;
+    std::size_t begin_i;
+    std::size_t begin_j;
 
-    auto size = memory->load_genome(*(argv+1), {begin_i, begin_j});
+    begin_i = 50;
+    begin_j = 50;
+
+    std::size_t size_i = 500;
+    std::size_t size_j = 500;
+
+    if(argc < 2){
+        std::cout << "Expected arguments. Format: cppfungera <restore?> <file>" << std::endl
+            << "   <restore?> : int : 1 to restore from <file> and 0 initialize single organism from <file>," << std::endl
+            << "<file> : string : name of file that contains snapshot or organism opcode" << std::endl;
+        return 1;
+    }
+
+    if(atoi(argv[1])){
+
+        // Doesn't work correctly :(
+        // TODO: Fix
+        /******** Restore an organism **********/
+        // Organism org;
+
+        // std::ifstream ifs("filename");
+        // boost::archive::text_iarchive ia(ifs);
+        // ia >> org;
+        /***************************************/
+
+
+        // Restore queue and memory from snapshot
+        // works :)
+        /*********** Restore queue *************/
+        std::ifstream ifs_q("queue");
+        boost::archive::text_iarchive ia_q(ifs_q);
+
+        ia_q >> *Queue::get_instance();
+        // std::cout << Queue::get_instance()->get_next_idx() << std::endl;
+
+        /*********** Restore memory ************/
+        std::ifstream ifs_mem("memory");
+        boost::archive::text_iarchive ia_mem(ifs_mem);
+
+        memory->init(size_i, size_j);
+        size = memory->load_genome(*(argv+2), {0, 0});
+
+        ia_mem >> *Memory::get_instance();
+        // std::cout << Memory::get_instance()->get_cells()[size_j*begin_j+begin_i].contents_ << std::endl;     // verify that the first element of cell is indeed it
+        /***************************************/
+
+        exit(1);
+    }
+    else{
+        memory->init(size_i, size_j);
+        size = memory->load_genome(*(argv+2), {begin_i, begin_j});
+    }
+
 
     Organism org(size, {begin_i, begin_j});
-    auto *cur_org = &org;
+    Organism *cur_org = &org;
 
     initscr();
     noecho();
@@ -100,6 +157,25 @@ int main(int argc, char **argv)
                     cycle_no++;
                 }
                 break;
+
+
+            case 'o':
+            case 'O': {
+                std::ofstream ofs_q("queue");
+                {
+                    boost::archive::text_oarchive oa_q(ofs_q);
+                    oa_q << *Queue::get_instance();
+                }
+
+                std::ofstream ofs_mem("memory");
+                {
+                    boost::archive::text_oarchive oa_mem(ofs_mem);
+                    oa_mem << *Memory::get_instance();
+                }
+                break;
+            }
+
+
             case 'n':
             case 'N':
                 cur_org = Queue::get_instance()->next();
