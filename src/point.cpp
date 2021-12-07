@@ -1,0 +1,70 @@
+#include "point.h"
+
+Point::Point(int _x, int _y) : x(_x), y(_y) {}
+
+QString Point::qstr()
+{
+    return QString("{%1, %2}").arg(x).arg(y);
+}
+
+Point &Point::operator+=(Point rhs)
+{
+    x += rhs.x;
+    y += rhs.y;
+    return *this;
+}
+
+Point &Point::operator-=(Point rhs)
+{
+    x -= rhs.x;
+    y -= rhs.y;
+    return *this;
+}
+
+Point &Point::operator++()
+{
+    ++x;
+    ++y;
+    return *this;
+}
+
+Point &Point::operator--()
+{
+    --x;
+    --y;
+    return *this;
+}
+
+Point operator*(int coef, Point rhs)
+{
+    rhs.x *= coef;
+    rhs.y *= coef;
+    return rhs;
+}
+
+Point operator*(Point lhs, int coef)
+{
+    lhs.x *= coef;
+    lhs.y *= coef;
+    return lhs;
+}
+
+Point operator+(Point lhs, Point rhs)
+{
+    return lhs += rhs;
+}
+
+Point operator-(Point lhs, Point rhs)
+{
+    return lhs -= rhs;
+}
+
+bool operator==(Point lhs, Point rhs)
+{
+    return lhs.x == rhs.x && lhs.y == rhs.y;
+}
+
+std::ostream &operator<<(std::ostream &os, Point p)
+{
+    return os << '{' << p.x << ", " << p.y << '}';
+}
