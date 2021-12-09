@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.5)
 
 project(qtfungera VERSION 0.1 LANGUAGES CXX)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_AUTOUIC ON)
@@ -14,7 +16,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
-find_package(Boost 1.77.0 REQUIRED)
+find_package(Boost REQUIRED serialization program_options)
 include_directories(${Boost_INCLUDE_DIR})
 
 set(PROJECT_SOURCES
@@ -59,9 +61,9 @@ else()
     endif()
 endif()
 
-target_link_libraries(qtfungera PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(qtfungera PRIVATE Qt${QT_VERSION_MAJOR}::Widgets ${Boost_LIBRARIES})
 
-target_link_libraries(qtfungera LINK_PUBLIC ${Boost_LIBRARIES})
+# target_link_libraries(qtfungera LINK_PUBLIC ${Boost_LIBRARIES})
 
 set_target_properties(qtfungera PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com

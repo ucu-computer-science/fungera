@@ -7,6 +7,10 @@
 
 #include <vector>
 
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/vector.hpp>
+
 class OrganismQueue : public QObject
 {
     Q_OBJECT
@@ -21,6 +25,10 @@ public:
 
     void cycleAll();
 
+    Organism * getOrganism() {
+        return _organisms[0];
+    }
+
 public slots:
     void selectNextOrg();
     void selectPrevOrg();
@@ -29,9 +37,19 @@ protected:
     OrganismQueue() = default;
 
 private:
+    friend class boost::serialization::access;
+
     std::vector<Organism *> _organisms;
 
     int _activeOrgIdx = 0;
+
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & _organisms;
+        ar & _activeOrgIdx;
+    }
+
 };
 
 #endif // ORGANISMQUEUE_H

@@ -13,6 +13,9 @@ Organism::Organism(Point topLeftPos, Point size) : _id(_nextID), _topLeftPos(top
     ++_nextID;
 }
 
+Organism::Organism()
+    : _id(_nextID), _topLeftPos({0, 0}), _size({0, 0}), _ip({0, 0}) { }
+
 void Organism::cycle()
 {
     char inst = _memory->instAt(_ip.x, _ip.y);
@@ -216,15 +219,15 @@ void Organism::pushToStack()
 {
     char reg = getInstAtOffset(1);
     Point regConts = _regs.at(reg);
-    _stack.push(regConts);
+    _stack.push_back(regConts);
     emit pushedToStack();
 }
 
 void Organism::popFromStack()
 {
     char reg = getInstAtOffset(1);
-    _regs.at(reg) = _stack.top();
-    _stack.pop();
+    _regs.at(reg) = _stack.back();
+    _stack.pop_back();
     emit popedFromStack(reg);
 }
 

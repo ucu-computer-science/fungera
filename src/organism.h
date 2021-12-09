@@ -10,6 +10,11 @@
 #include <stack>
 #include <unordered_map>
 
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/unordered_map.hpp>
+
 // Forward declaration
 class OrganismQueue;
 
@@ -19,6 +24,7 @@ class Organism : public QObject
 
 public:
     Organism(Point topLeftSize, Point size);
+    Organism();
 
     void cycle();
 
@@ -73,12 +79,12 @@ private:
 
     static int _nextID;
 
-    const int _id;
+    int _id;
 
     int _errors = 0;
 
-    const Point _topLeftPos;
-    const Point _size;
+    Point _topLeftPos;
+    Point _size;
 
     Point _ip;
     Point _delta = { 0, 0 };
@@ -90,12 +96,29 @@ private:
         { 'd', {} }
     };
 
-    std::stack<Point> _stack;
+    std::vector<Point> _stack;
 
     Point _childTopLeftPos;
     Point _childSize;
 
     friend class StatusPanel;
+
+    friend class boost::serialization::access;
+
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & _topLeftPos;
+        ar & _size;
+        ar & _ip;
+        ar & _nextID;
+        ar & _delta;
+        ar & _errors;
+        ar & _childTopLeftPos;
+        ar & _childSize;
+        ar & _stack;
+        ar & _regs;
+    }
 };
 
 #endif // ORGANISM_H
