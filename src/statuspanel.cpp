@@ -57,7 +57,7 @@ void StatusPanel::updateReg(char reg)
 
 void StatusPanel::onPushedToStack()
 {
-    QString qstr = _organism->_stack.top().qstr();
+    QString qstr = _organism->_stack.back().qstr();
     _stackLbls[_nextAfterTopIdx]->setText(qstr);
     ++_nextAfterTopIdx;
 }
