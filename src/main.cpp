@@ -17,7 +17,9 @@
 
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
+#include <boost/program_options.hpp>
 
+using namespace boost::program_options;
 
 void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, int snap_cycle);
 
@@ -28,7 +30,7 @@ int main(int argc, char *argv[])
 
     Memory *m = Memory::getInstance();
     using std::string;
-    string fn;
+    string fn = "";
     Point tlp(2500, 2500);
     Point sz;
     StatusPanel *sp;
@@ -38,29 +40,47 @@ int main(int argc, char *argv[])
 
     /*
      * Command line arguments usage:
-     * argv[1] -- int -- mode how to run program: 
-     *     0 run from start
-     *     1 continue from snapshot
-     *
-     * argv[2] -- string -- filename of organism gen
-     *
-     * No command line arguments defaults to loading in "normal" mode from begining ../initial.gen
+     *     Run this program with -h flag to see usgae
      */
 
+
     bool isRestore = false;
+    int instructionSetIdx = 0;
+    int snap_cycle = 0;
 
-    int snap_cycle = 0;     // Num of cycle on which to do snapshot. 0 means never
 
-    if (argc == 3)
+    options_description desc{"Options"};
+    variables_map vm;
+    try {
+        desc.add_options()
+            ("help,h", "Show this help screen")
+            ("restore,r", "Restore flag, means that simulation will be restored from snapshots. Ignore it to run simulation from the beggining with single organism with genome, specified with -f")
+            ("instr-set,i", value<int>()->default_value(0), "Instruction set index on which simulation will be ran")
+            ("snap-cycle,s", value<int>()->default_value(0), "Snapshot cycle -- on which cycle snapshot will be done. 0 defaults to never")
+            ("filename,f", value<string>()->default_value(""), "Name of file that contains genome of an organism");
+
+        store(parse_command_line(argc, argv, desc), vm);
+        notify(vm);
+
+        if (vm.count("help"))
+        {
+            std::cout << desc << std::endl;
+            exit(0);
+        }
+        else {
+            if (vm.count("filename"))
+                fn = vm["filename"].as<string>();
+            if (vm.count("restore"))
+                isRestore = true;
+
+            instructionSetIdx = vm["instr-set"].as<int>();
+            snap_cycle = vm["snap-cycle"].as<int>();
+        }
+    }
+    catch (const error &ex)
     {
-        isRestore = atoi(argv[1]);
-        fn = argv[2];
-    }
-    else if (argc == 2) {
-        fn = argv[1];
-    }
-    else {
-        fn = "../initial.gen";
+        std::cerr << ex.what() << std::endl;
+        exit(1);
     }
 
 
