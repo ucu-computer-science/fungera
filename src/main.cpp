@@ -19,7 +19,7 @@
 #include <boost/archive/text_iarchive.hpp>
 
 
-void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, int snap_cycle);
+void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, int snapCycle);
 
 int main(int argc, char *argv[])
 { 
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 
     bool isRestore = false;
 
-    int snap_cycle = 0;     // Num of cycle on which to do snapshot. 0 means never
+    int snapCycle = 0;     // Num of cycle on which to do a snapshot. 0 means never
 
     if (argc == 3)
     {
@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
 
 
     QPushButton *runBtn = new QPushButton("Run");
-    runBtn->connect(runBtn, &QPushButton::clicked, [&](){ run(oq, sp, snap_cycle); });
+    runBtn->connect(runBtn, &QPushButton::clicked, [&](){ run(oq, sp, snapCycle); });
 
     QPushButton *nextBtn = new QPushButton("Next");
     nextBtn->connect(nextBtn, &QPushButton::clicked, oq, &OrganismQueue::selectNextOrg);
@@ -131,7 +131,25 @@ int main(int argc, char *argv[])
     return a.exec();
 }
 
-void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, int snap_cycle)
+void make_snapshot() {
+    std::cout << "Serializing...";
+
+    std::ofstream ofs_mem("memory_cache");
+    {
+        boost::archive::text_oarchive oa_mem(ofs_mem);
+        oa_mem << *Memory::getInstance();
+    }
+
+    std::ofstream ofs_q("queue_cache");
+    {
+        boost::archive::text_oarchive oa_q(ofs_q);
+        oa_q << *OrganismQueue::getInstance();
+    }
+
+    std::cout << " Done" << std::endl;
+}
+
+void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, int snapCycle)
 {
     unsigned int counter = 0;
     for (;;) {
@@ -139,24 +157,8 @@ void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, int snap_cycle)
         statusPanel->cycle();
         QCoreApplication::processEvents();
 
-        if (counter == snap_cycle && snap_cycle != 0) {
-            std::cout << "Serializing...";
-
-            std::ofstream ofs_mem("memory_cache");
-            {
-                boost::archive::text_oarchive oa_mem(ofs_mem);
-                oa_mem << *Memory::getInstance();
-            }
-
-            std::ofstream ofs_q("queue_cache");
-            {
-                boost::archive::text_oarchive oa_q(ofs_q);
-                oa_q << *OrganismQueue::getInstance();
-            }
-
-            std::cout << " Done" << std::endl;
-
-            exit(1);
+        if (counter == snapCycle && snapCycle != 0) {
+            make_snapshot();
         }
 
         counter++;
