@@ -8,7 +8,7 @@ struct Cell
     char inst = '.';
     bool isFree = true;
     // TODO: Alias this enum by a custom one
-    QColor bgColor = Qt::white;
+    Qt::GlobalColor bgColor = Qt::white;
 };
 
 #endif // CELL_H

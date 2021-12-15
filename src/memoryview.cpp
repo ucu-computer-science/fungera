@@ -4,10 +4,10 @@
 
 // The hasing function for the color is needed only in this translation
 // unit
-std::size_t hash_value(const QColor &color)
-{
-    return std::hash<QRgb>{}(color.rgba());
-}
+//std::size_t hash_value(const QColor &color)
+//{
+//    return std::hash<QRgb>{}(color.rgba());
+//}
 
 MemoryView::MemoryView() : QAbstractScrollArea(nullptr)
 {
@@ -140,7 +140,7 @@ void MemoryView::paintVisibleCells()
     }
 }
 
-using Pair = std::pair<char, QColor>;
+using Pair = std::pair<char, Qt::GlobalColor>;
 const QPixmap &MemoryView::getPixmapForPair(const Pair &p)
 {
     auto it = _pairsCache.find(p);
