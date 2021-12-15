@@ -10,7 +10,10 @@
 
 #include <string>
 
+bool isRunning = true;
+
 void run(OrganismQueue *organismQueue, StatusPanel *statusPanel);
+void cycle(OrganismQueue *, StatusPanel *);
 
 int main(int argc, char *argv[])
 { 
@@ -34,7 +37,13 @@ int main(int argc, char *argv[])
     OrganismQueue *oq = OrganismQueue::getInstance();
 
     QPushButton *runBtn = new QPushButton("Run");
-    runBtn->connect(runBtn, &QPushButton::clicked, [&](){ run(oq, sp); });
+    runBtn->connect(runBtn, &QPushButton::clicked, [=](){ run(oq, sp); });
+
+    QPushButton *startAndStopBtn = new QPushButton("Start/Stop");
+    startAndStopBtn->connect(startAndStopBtn, &QPushButton::clicked, [](){ isRunning = !isRunning; });
+
+    QPushButton *cycleBtn = new QPushButton("Cycle");
+    cycleBtn->connect(cycleBtn, &QPushButton::clicked, [=](){ cycle(oq, sp); });
 
     QPushButton *nextBtn = new QPushButton("Next");
     nextBtn->connect(nextBtn, &QPushButton::clicked, oq, &OrganismQueue::selectNextOrg);
@@ -49,6 +58,8 @@ int main(int argc, char *argv[])
     QVBoxLayout *vBoxLayout = new QVBoxLayout;
     vBoxLayout->addLayout(hBoxLayout);
     vBoxLayout->addWidget(runBtn);
+    vBoxLayout->addWidget(startAndStopBtn);
+    vBoxLayout->addWidget(cycleBtn);
     vBoxLayout->addWidget(nextBtn);
     vBoxLayout->addWidget(prevBtn);
     wgt.setLayout(vBoxLayout);
@@ -68,8 +79,17 @@ int main(int argc, char *argv[])
 void run(OrganismQueue *organismQueue, StatusPanel *statusPanel)
 {
     for (;;) {
-        organismQueue->cycleAll();
-        statusPanel->cycle();
         QCoreApplication::processEvents();
+        if (!isRunning)
+            continue;
+        cycle(organismQueue, statusPanel);
     }
+}
+
+// Have no fucking idea how does this work (doesn't interfere with already
+// running run()
+void cycle(OrganismQueue *organismQueue, StatusPanel *statusPanel)
+{
+    organismQueue->cycleAll();
+    statusPanel->cycle();
 }
