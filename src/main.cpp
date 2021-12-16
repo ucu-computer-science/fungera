@@ -20,7 +20,7 @@
 
 bool isRunning = true;
 
-void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, int snap_cycle);
+void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, int snapCycle);
 void cycle(OrganismQueue *, StatusPanel *);
 
 using namespace boost::program_options;
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 
     bool isRestore = false;
     int instructionSetIdx = 0;
-    int snap_cycle = 0;
+    int snapCycle = 0;
 
 
     options_description desc{"Options"};
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
                 isRestore = true;
 
             instructionSetIdx = vm["instr-set"].as<int>();
-            snap_cycle = vm["snap-cycle"].as<int>();
+            snapCycle = vm["snap-cycle"].as<int>();
         }
     }
     catch (const error &ex)
@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
 
     if (isRestore) {
         // Restore from snapshot
-        std::cout << "Restoring...";
+        std::cout << "Restoring..." << std::endl;
 
         std::ifstream ifs_mem("memory_cache");
         boost::archive::text_iarchive ia_mem(ifs_mem);
@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
 
         ia_q >> *OrganismQueue::getInstance();
 
-        std::cout << " Done" << std::endl;
+        std::cout << "  Done" << std::endl;
 
 
         static Organism *org = OrganismQueue::getInstance()->getOrganism();
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
 
 
     QPushButton *runBtn = new QPushButton("Run");
-    runBtn->connect(runBtn, &QPushButton::clicked, [=](){ run(oq, sp, snap_cycle); });
+    runBtn->connect(runBtn, &QPushButton::clicked, [=](){ run(oq, sp, snapCycle); });
 
     QPushButton *startAndStopBtn = new QPushButton("Start/Stop");
     startAndStopBtn->connect(startAndStopBtn, &QPushButton::clicked, [](){ isRunning = !isRunning; });
@@ -161,7 +161,25 @@ int main(int argc, char *argv[])
     return a.exec();
 }
 
-void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, int snap_cycle)
+void make_snapshot() {
+    std::cout << "Serializing..." << std::endl;
+
+    std::ofstream ofs_mem("memory_cache");
+    {
+        boost::archive::text_oarchive oa_mem(ofs_mem);
+        oa_mem << *Memory::getInstance();
+    }
+
+    std::ofstream ofs_q("queue_cache");
+    {
+        boost::archive::text_oarchive oa_q(ofs_q);
+        oa_q << *OrganismQueue::getInstance();
+    }
+
+    std::cout << "  Done" << std::endl;
+}
+
+void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, int snapCycle)
 {
     unsigned int counter = 0;
     for (;;) {
@@ -170,24 +188,8 @@ void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, int snap_cycle)
             continue;
         cycle(organismQueue, statusPanel);
 
-        if (counter == snap_cycle && snap_cycle != 0) {
-            std::cout << "Serializing...";
-
-            std::ofstream ofs_mem("memory_cache");
-            {
-                boost::archive::text_oarchive oa_mem(ofs_mem);
-                oa_mem << *Memory::getInstance();
-            }
-
-            std::ofstream ofs_q("queue_cache");
-            {
-                boost::archive::text_oarchive oa_q(ofs_q);
-                oa_q << *OrganismQueue::getInstance();
-            }
-
-            std::cout << " Done" << std::endl;
-
-            exit(1);
+        if (counter == snapCycle && snapCycle != 0) {
+            make_snapshot();
         }
 
         counter++;
