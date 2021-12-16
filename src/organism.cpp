@@ -262,6 +262,12 @@ void Organism::jump()
     }
 }
 
+void Organism::random() {
+    char reg = getInstAtOffset(1);
+    _regs.at(reg) = { rand() % 2, rand() % 2};
+    emit regChanged(reg);
+}
+
 Point Organism::getIpAtOffset(int offset)
 {
     return _ip + offset*_delta;
@@ -327,7 +333,9 @@ const unordered_map<char, InstImpl> Organism::_instImpls{
     { '@', &Organism::allocChild },
     { '$', &Organism::separateChild },
     { 'S', &Organism::pushToStack },
-    { 'P', &Organism::popFromStack }
+    { 'P', &Organism::popFromStack },
+    {'J', &Organism::jump},
+    { 'R', &Organism::random}
 };
 
 const unordered_map<char, Point> Organism::_opcodes{
@@ -355,7 +363,9 @@ const unordered_map<char, Point> Organism::_opcodes{
     { '@', { 7, 2 } },
     { '$', { 7, 3 } },
     { 'S', { 8, 0 } },
-    { 'P', { 8, 1 } }
+    { 'P', { 8, 1 } },
+    { 'J', { 9, 0 } },
+    { 'R', { 9, 1 } }
 };
 
 int Organism::_nextID = 0;
