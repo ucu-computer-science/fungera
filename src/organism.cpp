@@ -231,6 +231,37 @@ void Organism::popFromStack()
     emit popedFromStack(reg);
 }
 
+void Organism::jump()
+{
+    std::vector<char> pattern;
+    int i = 1;
+    // RANGE FOR JUMP : TODO: Reconsider
+    int range_j = 100;
+    for (; i < range_j; ++i) {
+        char inst = getInstAtOffset(i);
+        if (inst == '.')
+            pattern.push_back(':');
+        else if (inst == ':')
+            pattern.push_back('.');
+        else
+            break;
+    }
+    ++i;
+    int ctr = 0;
+    for (; i < range_j; ++i) {
+        if (getInstAtOffset(i) == pattern[ctr]) {
+            ++ctr;
+        } else {
+            ctr = 0;
+        }
+        if (ctr == pattern.size()) {
+            _ip = getIpAtOffset( i );
+
+            break;
+        }
+    }
+}
+
 Point Organism::getIpAtOffset(int offset)
 {
     return _ip + offset*_delta;
