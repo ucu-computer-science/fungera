@@ -340,7 +340,7 @@ const unordered_map<char, InstImpl> Organism::_instImpls{
     { '$', &Organism::separateChild },
     { 'S', &Organism::pushToStack },
     { 'P', &Organism::popFromStack },
-    {'J', &Organism::jump},
+    { 'J', &Organism::jump},
     { 'R', &Organism::random}
 };
 
