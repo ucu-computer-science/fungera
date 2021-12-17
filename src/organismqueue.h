@@ -25,6 +25,9 @@ public slots:
     void selectNextOrg();
     void selectPrevOrg();
 
+signals:
+    void organismChanged(Organism *);
+
 protected:
     OrganismQueue() = default;
 

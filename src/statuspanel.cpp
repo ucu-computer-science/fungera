@@ -1,5 +1,7 @@
 #include "statuspanel.h"
 
+#include "organismqueue.h"
+
 #include <sstream>
 #include <string_view>
 #include <unordered_map>
@@ -7,6 +9,8 @@
 using std::string_view;
 StatusPanel::StatusPanel(Organism *organism, QWidget *parent) : QWidget(parent), _organism(organism)
 {
+    connect(OrganismQueue::getInstance(), &OrganismQueue::organismChanged, this, &StatusPanel::updateOrganism);
+
     connect(_organism, &Organism::deltaChanged, this, &StatusPanel::updateDelta);
     connect(_organism, &Organism::regChanged, this, &StatusPanel::updateReg);
     connect(_organism, &Organism::pushedToStack, this, &StatusPanel::onPushedToStack);
@@ -37,7 +41,20 @@ void StatusPanel::cycle()
     updateIP();
 }
 
-void StatusPanel::updateOrganism(Organism *organism) { _organism = organism; }
+void StatusPanel::updateOrganism(Organism *organism)
+{
+    disconnect(_organism, &Organism::deltaChanged, this, &StatusPanel::updateDelta);
+    disconnect(_organism, &Organism::regChanged, this, &StatusPanel::updateReg);
+    disconnect(_organism, &Organism::pushedToStack, this, &StatusPanel::onPushedToStack);
+    disconnect(_organism, &Organism::popedFromStack, this, &StatusPanel::onPoppedFromStack);
+
+    _organism = organism;
+
+    connect(_organism, &Organism::deltaChanged, this, &StatusPanel::updateDelta);
+    connect(_organism, &Organism::regChanged, this, &StatusPanel::updateReg);
+    connect(_organism, &Organism::pushedToStack, this, &StatusPanel::onPushedToStack);
+    connect(_organism, &Organism::popedFromStack, this, &StatusPanel::onPoppedFromStack);
+}
 
 using std::stringstream;
 void StatusPanel::updateDelta()

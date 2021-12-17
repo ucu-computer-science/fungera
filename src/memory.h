@@ -26,6 +26,8 @@ public:
 
     void allocArea(Point topLeftPos, Point size);
 
+    void irradiate();
+
     Cell &operator()(int row, int col);
     Cell operator()(int row, int col) const;
 

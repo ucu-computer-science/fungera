@@ -22,6 +22,7 @@ void OrganismQueue::selectNextOrg()
     _organisms[_activeOrgIdx]->setInactiveColors();
     _activeOrgIdx = (_activeOrgIdx + 1) % _organisms.size();
     _organisms[_activeOrgIdx]->setActiveColors();
+    emit organismChanged(_organisms[_activeOrgIdx]);
 }
 
 void OrganismQueue::selectPrevOrg()
@@ -30,4 +31,5 @@ void OrganismQueue::selectPrevOrg()
     _activeOrgIdx = (((_activeOrgIdx - 1) % _organisms.size()) + _organisms.size())
                     % _organisms.size();
     _organisms[_activeOrgIdx]->setActiveColors();
+    emit organismChanged(_organisms[_activeOrgIdx]);
 }

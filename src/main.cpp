@@ -78,11 +78,13 @@ int main(int argc, char *argv[])
 
 void run(OrganismQueue *organismQueue, StatusPanel *statusPanel)
 {
-    for (;;) {
+    for (int i = 0;; ++i) {
         QCoreApplication::processEvents();
         if (!isRunning)
             continue;
         cycle(organismQueue, statusPanel);
+        if (i % 5 == 0)
+            Memory::getInstance()->irradiate();
     }
 }
 
