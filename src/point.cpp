@@ -64,6 +64,13 @@ bool operator==(Point lhs, Point rhs)
     return lhs.x == rhs.x && lhs.y == rhs.y;
 }
 
+bool operator<(Point lhs, Point rhs)
+{
+    if (lhs.x == rhs.x)
+        return lhs.y < rhs.y;
+    return lhs.x < rhs.x;
+}
+
 std::ostream &operator<<(std::ostream &os, Point p)
 {
     return os << '{' << p.x << ", " << p.y << '}';

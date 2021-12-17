@@ -85,3 +85,12 @@ void Memory::setAreaFreedom(Point topLeftPos, Point size, bool isFree)
         for (int col = topLeftPos.y; col < lastCol; ++col)
             (*this)(row, col).isFree = isFree;
 }
+
+void Memory::setInstAt(int row, int col, char new_inst)
+{
+    this->_cells[row*_rows+col].inst = new_inst;
+}
+void Memory::setInstAt(Point pnt, char new_inst)
+{
+    this->setInstAt(pnt.x, pnt.y, new_inst);
+}

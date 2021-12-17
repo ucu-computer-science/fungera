@@ -29,6 +29,14 @@ public:
         return _organisms[0];
     }
 
+    size_t getOrganismsNum() {
+        return _organisms.size();
+    }
+
+    std::vector<Organism*> getOrganisms() {
+        return _organisms;
+    }
+
 public slots:
     void selectNextOrg();
     void selectPrevOrg();

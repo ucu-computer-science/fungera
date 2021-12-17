@@ -31,6 +31,12 @@ public:
     void setActiveColors();
     void setInactiveColors();
 
+    char getInstAtOffsetAbs(Point offset);
+
+    Point getSize() {
+        return _size;
+    }
+
 signals:
     void cellChanged(int, int);
     void colorsChanged(Point, Point);

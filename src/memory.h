@@ -24,6 +24,9 @@ public:
     char &instAt(int row, int col);
     char instAt(int row, int col) const;
 
+    void setInstAt(Point pnt, char new_inst);
+    void setInstAt(int row, int col, char new_inst);
+
     Point loadGenome(const std::string &fileName, Point topLeftPos);
 
     bool isAreaFree(Point topLeftPos, Point size);
@@ -49,7 +52,7 @@ private:
     {
         ar & _rows;
         ar & _cols;
-        for(unsigned i = 0; i < _rows*_cols; i++){
+        for(int i = 0; i < _rows*_cols; i++){
             ar & _cells[i];
         }
     }

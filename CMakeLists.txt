@@ -36,6 +36,8 @@ set(PROJECT_SOURCES
         src/organismqueue.cpp
         src/statuspanel.h
         src/statuspanel.cpp
+        src/statistics.cpp
+        src/statistics.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

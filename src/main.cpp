@@ -3,6 +3,7 @@
 #include "memoryview.h"
 #include "organism.h"
 #include "point.h"
+#include "src/statistics.h"
 #include "statuspanel.h"
 #include "organismqueue.h"
 
@@ -20,7 +21,7 @@
 
 bool isRunning = true;
 
-void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, int snapCycle);
+void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, unsigned snapCycle);
 void cycle(OrganismQueue *, StatusPanel *);
 
 using namespace boost::program_options;
@@ -48,7 +49,7 @@ int main(int argc, char *argv[])
 
     bool isRestore = false;
     int instructionSetIdx = 0;
-    int snapCycle = 0;
+    unsigned snapCycle = 0;
 
 
     options_description desc{"Options"};
@@ -179,7 +180,7 @@ void make_snapshot() {
     std::cout << "  Done" << std::endl;
 }
 
-void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, int snapCycle)
+void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, unsigned snapCycle)
 {
     unsigned int counter = 0;
     for (;;) {
@@ -187,6 +188,16 @@ void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, int snapCycle)
         if (!isRunning)
             continue;
         cycle(organismQueue, statusPanel);
+
+        if (counter == 950) {
+            Memory::getInstance()->setInstAt(2500, 2501, '&');
+        }
+
+        if (counter == 10000) {
+            std::cout << "Stats: " << std::endl;
+            Statistics stat;
+            std::cout << stat.entropy(OrganismQueue::getInstance()) << std::endl;
+        }
 
         if (counter == snapCycle && snapCycle != 0) {
             make_snapshot();

@@ -75,7 +75,7 @@ void Organism::findPattern()
     }
 
     ++i;
-    int ctr = 0;
+    size_t ctr = 0;
     for (; i < maxI; ++i) {
         if (getInstAtOffset(i) == pattern[ctr]) {
             ++ctr;
@@ -247,7 +247,7 @@ void Organism::jump()
             break;
     }
     ++i;
-    int ctr = 0;
+    size_t ctr = 0;
     for (; i < range_j; ++i) {
         if (getInstAtOffset(i) == pattern[ctr]) {
             ++ctr;
@@ -265,6 +265,12 @@ void Organism::jump()
 Point Organism::getIpAtOffset(int offset)
 {
     return _ip + offset*_delta;
+}
+
+char Organism::getInstAtOffsetAbs(Point offset)
+{
+    Point ipAtOffset = _topLeftPos + offset;
+    return _memory->instAt(ipAtOffset.x, ipAtOffset.y);;
 }
 
 char Organism::getInstAtOffset(int offset)
