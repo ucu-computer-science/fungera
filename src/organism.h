@@ -69,6 +69,7 @@ private:
     void pushToStack();
     void popFromStack();
     void jump();
+    void random();
 
     // TODO: Rename Ip to IP
     Point getIpAtOffset(int offset);
