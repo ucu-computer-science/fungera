@@ -193,9 +193,14 @@ void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, unsigned snapCy
             Memory::getInstance()->setInstAt(2500, 2501, '&');
         }
 
-        if (counter == 10000) {
+        if (counter == 7000) {
             std::cout << "Stats: " << std::endl;
             Statistics stat;
+
+            std::map<Point, int> sizeStat = stat.sizeNOrgs();
+            for (std::pair<Point,int> entry : sizeStat){
+                std::cout << entry.first.x << ", " << entry.first.y << ": " << entry.second << std::endl;
+            }
             std::cout << stat.entropy(OrganismQueue::getInstance()) << std::endl;
         }
 
