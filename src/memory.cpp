@@ -76,6 +76,8 @@ bool Memory::isAreaFree(Point topLeftPos, Point size)
 
 void Memory::allocArea(Point topLeftPos, Point size) { setAreaFreedom(topLeftPos, size, false); }
 
+void Memory::freeArea(Point topLeftPos, Point size) { setAreaFreedom(topLeftPos, size, true); }
+
 Cell &Memory::operator()(int row, int col) { return _cells[row * _cols + col]; }
 
 Cell Memory::operator()(int row, int col) const { return _cells[row * _cols + col]; }
@@ -93,6 +95,14 @@ void Memory::irradiate()
     vector<char> instructions{ '.', ':', 'a', 'b', 'c', 'd', 'x', 'y', '^', 'v', '<', '>', '&',
                                '?', '1', '0', '-', '+', '~', 'L', 'W', '@', '$', 'S', 'P' };
     (*this).instAt(randRow, randCol) = *select_randomly(instructions.begin(), instructions.end());
+}
+
+bool Memory::isTimeToKill()
+{
+    auto ratio = std::count_if(_cells, _cells+_rows*_cols, [](const Cell &cell){ return !cell.isFree; })
+            / std::count_if(_cells, _cells+_rows*_cols, [](const Cell &cell){ return cell.isFree; });
+    constexpr auto memoryFullRatio = 0.9;
+    return ratio > memoryFullRatio;
 }
 
 void Memory::setAreaFreedom(Point topLeftPos, Point size, bool isFree)

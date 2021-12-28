@@ -20,6 +20,8 @@ class Organism : public QObject
 public:
     Organism(Point topLeftSize, Point size);
 
+    ~Organism();
+
     void cycle();
 
     void setActiveColors();
@@ -36,6 +38,8 @@ signals:
     void errorsChanged();
     void pushedToStack();
     void popedFromStack(char);
+
+    friend bool operator>(const Organism &lhs, const Organism &rhs);
 
 private:
     void nop();

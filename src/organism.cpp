@@ -13,11 +13,23 @@ Organism::Organism(Point topLeftPos, Point size) : _id(_nextID), _topLeftPos(top
     ++_nextID;
 }
 
+Organism::~Organism()
+{
+    Memory &mem = *Memory::getInstance();
+    mem.freeArea(_topLeftPos, _size);
+    if (_childSize != Point(0, 0)) // Why does { 0, 0 } cannot be used?
+        mem.freeArea(_childTopLeftPos, _childSize);
+}
+
 void Organism::cycle()
 {
     char inst = _memory->instAt(_ip.x, _ip.y);
-    (this->*_instImpls.at(inst))();
-    _ip = getIpAtOffset(1);
+    try {
+        (this->*_instImpls.at(inst))();
+    } catch (std::runtime_error &) { // Catch any type of error
+        ++_errors;
+    }
+    _ip += _delta;
 }
 
 void Organism::setActiveColors()
@@ -325,3 +337,8 @@ const unordered_map<char, Point> Organism::_opcodes{
 };
 
 int Organism::_nextID = 0;
+
+bool operator>(const Organism &lhs, const Organism &rhs)
+{
+    return lhs._errors > rhs._errors;
+}

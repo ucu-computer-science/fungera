@@ -85,6 +85,8 @@ void run(OrganismQueue *organismQueue, StatusPanel *statusPanel)
         cycle(organismQueue, statusPanel);
         if (i % 5 == 0)
             Memory::getInstance()->irradiate();
+        if (i % 10000 == 0 && Memory::getInstance()->isTimeToKill())
+            OrganismQueue::getInstance()->killOrganisms();
     }
 }
 

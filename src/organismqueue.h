@@ -21,6 +21,8 @@ public:
 
     void cycleAll();
 
+    void killOrganisms();
+
 public slots:
     void selectNextOrg();
     void selectPrevOrg();
