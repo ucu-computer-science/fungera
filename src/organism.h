@@ -119,6 +119,7 @@ private:
         ar & _topLeftPos;
         ar & _size;
         ar & _ip;
+        ar & _id;
         ar & _nextID;
         ar & _delta;
         ar & _errors;
