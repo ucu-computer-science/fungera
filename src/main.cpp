@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
         sp = new StatusPanel(org);
     }
     else {
-        sz = m->loadGenome(fn, tlp);
+        sz = m->loadGenome("../gens/initial_simple_improved.gen", tlp);
 
         // std::cout << sz.x << " " << sz.y << std::endl;
 
@@ -194,25 +194,28 @@ void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, unsigned snapCy
             //Memory::getInstance()->setInstAt(2500, 2501, '&');
         //}
 
-        //if (counter == 7000) {
-            //std::cout << "Stats: " << std::endl;
-            //Statistics stat;
-
-            //std::map<Point, int> sizeStat = stat.sizeNOrgs();
-            //for (std::pair<Point,int> entry : sizeStat){
-                //std::cout << entry.first.x << ", " << entry.first.y << ": " << entry.second << std::endl;
-            //}
-            //std::cout << stat.entropy(OrganismQueue::getInstance()) << std::endl;
-        //}
-
         if (i == snapCycle)
             make_snapshot();
 
-        if (i % 1000 == 0) 
-            std::cout << i << std::endl;
+        if (i % 1000 == 0)
+        {
+            std::cout << "Cycle " << i << ". Stats: " << std::endl;
 
-        if (i % 5 == 0)
-            Memory::getInstance()->irradiate();
+            Statistics stat;
+
+            std::cout << "Num of organisms: " << OrganismQueue::getInstance()->getOrganismsNum() << std::endl;
+
+            std::map<Point, int> sizeStat = stat.sizeNOrgs();
+            for (std::pair<Point,int> entry : sizeStat){
+                std::cout << "  " << entry.first.x << ", " << entry.first.y << ": " << entry.second << std::endl;
+            }
+            std::cout << "Entropy: " << stat.entropy(OrganismQueue::getInstance()) << std::endl << std::endl;
+        }
+
+
+        if (i % 1 == 5)
+            for (int j = 0; j < 1; j++)
+                Memory::getInstance()->irradiate();
 
         if (i % 10000 == 0 && Memory::getInstance()->isTimeToKill())
             OrganismQueue::getInstance()->killOrganisms();
