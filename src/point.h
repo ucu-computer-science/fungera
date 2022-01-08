@@ -45,6 +45,7 @@ Point operator-(Point lhs, Point rhs);
 bool operator==(Point lhs, Point rhs);
 
 bool operator<(Point lhs, Point rhs);
+bool operator!=(Point lhs, Point rhs);
 
 std::ostream &operator<<(std::ostream &os, Point p);
 

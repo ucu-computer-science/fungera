@@ -184,14 +184,13 @@ void make_snapshot() {
 
 void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, unsigned snapCycle)
 {
-    unsigned int counter = 0;
-    for (;;) {
+    for (int i = 1;; ++i) {
         QCoreApplication::processEvents();
         if (!isRunning)
             continue;
         cycle(organismQueue, statusPanel);
 
-        //if (counter == 950) {
+        //if (i == 950) {
             //Memory::getInstance()->setInstAt(2500, 2501, '&');
         //}
 
@@ -206,11 +205,17 @@ void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, unsigned snapCy
             //std::cout << stat.entropy(OrganismQueue::getInstance()) << std::endl;
         //}
 
-        if (counter == snapCycle && snapCycle != 0) {
+        if (i == snapCycle)
             make_snapshot();
-        }
 
-        counter++;
+        if (i % 1000 == 0) 
+            std::cout << i << std::endl;
+
+        if (i % 5 == 0)
+            Memory::getInstance()->irradiate();
+
+        if (i % 10000 == 0 && Memory::getInstance()->isTimeToKill())
+            OrganismQueue::getInstance()->killOrganisms();
     }
 }
 

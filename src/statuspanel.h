@@ -65,7 +65,6 @@ private:
     QLabel *_stack5 = new QLabel;
     QLabel *_stack6 = new QLabel;
     QLabel *_stack7 = new QLabel;
-    // Not sure if these consts are what I want
     // TODO: Look into this and possibly rename the variables
     QLabel * const _stackLbls[8] = { _stack0, _stack1, _stack2, _stack3, _stack4, _stack5, _stack6, _stack7 };
     int _nextAfterTopIdx = 0;

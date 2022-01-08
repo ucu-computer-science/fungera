@@ -26,6 +26,8 @@ public:
     Organism(Point topLeftSize, Point size);
     Organism();
 
+    ~Organism();
+
     void cycle();
 
     void setActiveColors();
@@ -48,6 +50,8 @@ signals:
     void errorsChanged();
     void pushedToStack();
     void popedFromStack(char);
+
+    friend bool operator>(const Organism &lhs, const Organism &rhs);
 
 private:
     void nop();

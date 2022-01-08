@@ -33,6 +33,12 @@ public:
 
     void allocArea(Point topLeftPos, Point size);
 
+    void freeArea(Point topLeftPos, Point size);
+
+    void irradiate();
+
+    bool isTimeToKill();
+
     Cell &operator()(int row, int col);
     Cell operator()(int row, int col) const;
 
