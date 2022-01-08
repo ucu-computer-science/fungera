@@ -114,6 +114,8 @@ int main(int argc, char *argv[])
     else {
         sz = m->loadGenome(fn, tlp);
 
+        // std::cout << sz.x << " " << sz.y << std::endl;
+
         static Organism org(tlp, sz);
         org.setActiveColors();
         OrganismQueue::getInstance()->add(&org);
@@ -189,15 +191,20 @@ void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, unsigned snapCy
             continue;
         cycle(organismQueue, statusPanel);
 
-        if (counter == 950) {
-            Memory::getInstance()->setInstAt(2500, 2501, '&');
-        }
+        //if (counter == 950) {
+            //Memory::getInstance()->setInstAt(2500, 2501, '&');
+        //}
 
-        if (counter == 10000) {
-            std::cout << "Stats: " << std::endl;
-            Statistics stat;
-            std::cout << stat.entropy(OrganismQueue::getInstance()) << std::endl;
-        }
+        //if (counter == 7000) {
+            //std::cout << "Stats: " << std::endl;
+            //Statistics stat;
+
+            //std::map<Point, int> sizeStat = stat.sizeNOrgs();
+            //for (std::pair<Point,int> entry : sizeStat){
+                //std::cout << entry.first.x << ", " << entry.first.y << ": " << entry.second << std::endl;
+            //}
+            //std::cout << stat.entropy(OrganismQueue::getInstance()) << std::endl;
+        //}
 
         if (counter == snapCycle && snapCycle != 0) {
             make_snapshot();

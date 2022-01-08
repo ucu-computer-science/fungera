@@ -2,6 +2,7 @@
 
 #include "memoryview.h"
 #include "organismqueue.h"
+#include <iostream>
 
 Organism::Organism(Point topLeftPos, Point size) : _id(_nextID), _topLeftPos(topLeftPos), _size(size), _ip(topLeftPos)
 {
@@ -264,8 +265,11 @@ void Organism::jump()
 
 void Organism::random() {
     char reg = getInstAtOffset(1);
-    _regs.at(reg) = { rand() % 2, rand() % 2};
+    int rand_x = rand() % 2;
+    int rand_y = rand() % 2;
+    _regs.at(reg) = { rand_x, rand_y};
     emit regChanged(reg);
+    std::cout << rand_x << " " << rand_y << std::endl;
 }
 
 Point Organism::getIpAtOffset(int offset)
