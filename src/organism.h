@@ -39,6 +39,8 @@ public:
         return _size;
     }
 
+    size_t last_snap_cycle = 0;
+
 signals:
     void cellChanged(int, int);
     void colorsChanged(Point, Point);

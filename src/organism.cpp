@@ -32,13 +32,27 @@ Organism::~Organism()
 void Organism::cycle()
 {
     OrganismQueue *oq = OrganismQueue::getInstance();
+    char inst = _memory->instAt(_ip.x, _ip.y);
     try {
-        char inst = _memory->instAt(_ip.x, _ip.y);
         (this->*_instImpls.at(inst))();
     } catch (std::runtime_error &) { // Catch any type of error
         ++_errors;
     }
     _ip += _delta;
+
+
+    // TODO: Extract snapshoting function for organism to separate method
+    size_t curr_cycle = OrganismQueue::getInstance()->cycle_no;
+    if (curr_cycle - this->last_snap_cycle > 4200)
+    {
+        std::ofstream o_child("organisms/" + std::to_string(this->_id) + "_" + std::to_string(curr_cycle));
+        {
+            boost::archive::text_oarchive oa_child(o_child);
+            oa_child << *this;
+        }
+        this->last_snap_cycle = curr_cycle;
+    }
+
 }
 
 void Organism::setActiveColors()
@@ -235,17 +249,20 @@ void Organism::separateChild()
     size_t curr_cycle = OrganismQueue::getInstance()->cycle_no;
     OrganismQueue::getInstance()->qStat.addRelation(org->_id, this->_id, curr_cycle);
 
+    // TODO: Extract snapshoting function for organism to separate method
     std::ofstream o_parent("organisms/" + std::to_string(this->_id) + "_" + std::to_string(curr_cycle));
     {
         boost::archive::text_oarchive oa_parent(o_parent);
         oa_parent << *this;
     }
+    this->last_snap_cycle = curr_cycle;
 
     std::ofstream o_child("organisms/" + std::to_string(org->_id) + "_" + std::to_string(curr_cycle));
     {
         boost::archive::text_oarchive oa_child(o_child);
         oa_child << *org;
     }
+    org->last_snap_cycle = curr_cycle;
 
 }
 
