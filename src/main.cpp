@@ -25,7 +25,6 @@ void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, unsigned snapCy
 void cycle(OrganismQueue *, StatusPanel *);
 
 using namespace boost::program_options;
-
 int main(int argc, char *argv[])
 { 
     QApplication a(argc, argv);
@@ -128,7 +127,7 @@ int main(int argc, char *argv[])
         sp = new StatusPanel(org);
     }
     else {
-        sz = m->loadGenome("../gens/initial_simple_improved.gen", tlp);
+        sz = m->loadGenome(fn, tlp);
 
         // std::cout << sz.x << " " << sz.y << std::endl;
 
