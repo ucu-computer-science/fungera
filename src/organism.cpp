@@ -2,7 +2,11 @@
 
 #include "memoryview.h"
 #include "organismqueue.h"
+#include "src/statistics.h"
 #include <iostream>
+#include <ostream>
+#include <fstream>
+#include <string>
 
 Organism::Organism(Point topLeftPos, Point size) : _id(_nextID), _topLeftPos(topLeftPos), _size(size), _ip(topLeftPos)
 {
@@ -27,8 +31,9 @@ Organism::~Organism()
 
 void Organism::cycle()
 {
-    char inst = _memory->instAt(_ip.x, _ip.y);
+    OrganismQueue *oq = OrganismQueue::getInstance();
     try {
+        char inst = _memory->instAt(_ip.x, _ip.y);
         (this->*_instImpls.at(inst))();
     } catch (std::runtime_error &) { // Catch any type of error
         ++_errors;
@@ -226,6 +231,22 @@ void Organism::separateChild()
     Organism *org = new Organism(_childTopLeftPos, _childSize);
     _organismQueue->add(org);
     _childSize = { 0, 0 };
+
+    size_t curr_cycle = OrganismQueue::getInstance()->cycle_no;
+    OrganismQueue::getInstance()->qStat.addRelation(org->_id, this->_id, curr_cycle);
+
+    std::ofstream o_parent("organisms/" + std::to_string(this->_id) + "_" + std::to_string(curr_cycle));
+    {
+        boost::archive::text_oarchive oa_parent(o_parent);
+        oa_parent << *this;
+    }
+
+    std::ofstream o_child("organisms/" + std::to_string(org->_id) + "_" + std::to_string(curr_cycle));
+    {
+        boost::archive::text_oarchive oa_child(o_child);
+        oa_child << *org;
+    }
+
 }
 
 void Organism::pushToStack()

@@ -17,6 +17,7 @@ void OrganismQueue::cycleAll()
 {
     for (Organism *o : _organisms)
         o->cycle();
+    cycle_no++;
 }
 
 void OrganismQueue::selectNextOrg()

@@ -1,8 +1,11 @@
 #include "src/statistics.h"
 #include "src/organism.h"
 #include "src/point.h"
+#include "organismqueue.h"
 #include <cmath>
 #include <map>
+
+#include <iostream>
 
 double Statistics::entropy(OrganismQueue *oq) {
     // TODO: reconsider variable names
@@ -81,4 +84,31 @@ std::map<Point, int> Statistics::sizeNOrgs() {
         sizeNOrgsMap[curr_org->getSize()]++;
     }
     return sizeNOrgsMap;
+}
+
+void Statistics::addRelation(int child_id, int parent_id, size_t cycle_no) {
+    std::pair<int, size_t> parent_n_cycle(parent_id, cycle_no);
+    evo_tree[child_id] = parent_n_cycle;
+    int i = 0;
+    i++;
+}
+
+void Statistics::printAllStatistics() {
+    std::cout << "Cycle " << OrganismQueue::getInstance()->cycle_no << ". Stats: " << std::endl;
+
+    std::cout << "Num of organisms: " << OrganismQueue::getInstance()->getOrganismsNum() << std::endl;
+
+    std::map<Point, int> sizeStat = this->sizeNOrgs();
+    for (std::pair<Point,int> entry : sizeStat)
+        std::cout << "  " << entry.first.x << ", " << entry.first.y << ": " << entry.second << std::endl;
+
+    std::cout << "Entropy: " << this->entropy(OrganismQueue::getInstance()) << std::endl;
+
+    std::cout << "Evolution tree:" << std::endl;
+    for (std::pair<int, std::pair<int, size_t>> cu_rel: evo_tree)
+        std::cout << "  " << cu_rel.second.first << " -> " << cu_rel.first
+                  << " (cycle " << cu_rel.second.second << ")" << std::endl;
+
+    std::cout << std::endl;
+
 }

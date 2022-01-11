@@ -2,6 +2,7 @@
 #define ORGANISMQUEUE_H
 
 #include "organism.h"
+#include "src/statistics.h"
 
 #include <QtWidgets>
 
@@ -16,6 +17,7 @@ class OrganismQueue : public QObject
     Q_OBJECT
 
 public:
+    size_t cycle_no = 1;
     OrganismQueue(OrganismQueue &) = delete;
     OrganismQueue &operator=(OrganismQueue &) = delete;
 
@@ -37,6 +39,8 @@ public:
         return _organisms;
     }
     void killOrganisms();
+
+    Statistics qStat = Statistics();
 
 public slots:
     void selectNextOrg();
