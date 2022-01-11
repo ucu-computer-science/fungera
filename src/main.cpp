@@ -48,6 +48,7 @@ int main(int argc, char *argv[])
 
 
     bool isRestore = false;
+    bool isCheck = false;
     int instructionSetIdx = 0;
     unsigned snapCycle = 0;
 
@@ -58,6 +59,7 @@ int main(int argc, char *argv[])
         desc.add_options()
             ("help,h", "Show this help screen")
             ("restore,r", "Restore flag, means that simulation will be restored from snapshots. Ignore it to run simulation from the beggining with single organism with genome, specified with -f")
+            ("chack,c", "Checks concrete organism from snapshot for vital parameters and possibility to replicate if true. Also runs simulation with it. If both restore and check are specified, check is prioritized")
             ("instr-set,i", value<int>()->default_value(0), "Instruction set index on which simulation will be ran")
             ("snap-cycle,s", value<int>()->default_value(0), "Snapshot cycle -- on which cycle snapshot will be done. 0 defaults to never")
             ("filename,f", value<string>()->default_value(""), "Name of file that contains genome of an organism");
@@ -75,6 +77,8 @@ int main(int argc, char *argv[])
                 fn = vm["filename"].as<string>();
             if (vm.count("restore"))
                 isRestore = true;
+            if (vm.count("check"))
+                isCheck = true;
 
             instructionSetIdx = vm["instr-set"].as<int>();
             snapCycle = vm["snap-cycle"].as<int>();
@@ -86,8 +90,20 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
+    if (isCheck) {
+        if (fn == "")
+            std::cerr << "No filename specified. How can I guess your snapshot name?!?" << std::endl;
 
-    if (isRestore) {
+        static Organism *org;
+
+        std::ifstream org_stream(fn);
+        boost::archive::text_iarchive ia_org(org_stream);
+
+        ia_org >> *org;
+        OrganismQueue::getInstance()->add(org);
+    }
+
+    else if (isRestore) {
         // Restore from snapshot
         std::cout << "Restoring..." << std::endl;
 
