@@ -12,11 +12,22 @@ void OrganismQueue::add(Organism *organism)
 {
     _organisms.push_back(organism);
 }
+void OrganismQueue::addInterim(Organism *organism)
+{
+    _organismsInterim.push_back(organism);
+}
 
 void OrganismQueue::cycleAll()
 {
     for (Organism *o : _organisms)
         o->cycle();
+
+    while (!_organismsInterim.empty())
+    {
+        this->add(_organismsInterim.back());
+        _organismsInterim.pop_back();
+    }
+
     cycle_no++;
 }
 

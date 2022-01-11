@@ -127,9 +127,9 @@ int main(int argc, char *argv[])
         sp = new StatusPanel(org);
     }
     else {
-        sz = m->loadGenome(fn, tlp);
+        system("rm organisms/*");
 
-        // std::cout << sz.x << " " << sz.y << std::endl;
+        sz = m->loadGenome(fn, tlp);
 
         static Organism org(tlp, sz);
         org.setActiveColors();
@@ -212,9 +212,8 @@ void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, unsigned snapCy
             OrganismQueue::getInstance()->qStat.printAllStatistics();
 
 
-        if (curr_cycle % 1 == 5)
-            for (int j = 0; j < 1; j++)
-                Memory::getInstance()->irradiate();
+        if (curr_cycle % 5 == 0)
+            Memory::getInstance()->irradiate();
 
         if (curr_cycle % 10000 == 0 && Memory::getInstance()->isTimeToKill())
             OrganismQueue::getInstance()->killOrganisms();

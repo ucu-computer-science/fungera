@@ -243,7 +243,7 @@ void Organism::allocChild()
 void Organism::separateChild()
 {
     Organism *org = new Organism(_childTopLeftPos, _childSize);
-    _organismQueue->add(org);
+    _organismQueue->addInterim(org);
     _childSize = { 0, 0 };
 
     size_t curr_cycle = OrganismQueue::getInstance()->cycle_no;

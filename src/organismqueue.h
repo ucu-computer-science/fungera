@@ -24,6 +24,7 @@ public:
     static OrganismQueue *getInstance();
 
     void add(Organism *organism);
+    void addInterim(Organism *organism);
 
     void cycleAll();
 
@@ -56,6 +57,7 @@ private:
     friend class boost::serialization::access;
 
     std::vector<Organism *> _organisms;
+    std::vector<Organism *> _organismsInterim;
 
     int _activeOrgIdx = 0;
 
