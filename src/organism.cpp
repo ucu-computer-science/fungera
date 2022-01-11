@@ -32,10 +32,10 @@ Organism::~Organism()
 void Organism::cycle()
 {
     OrganismQueue *oq = OrganismQueue::getInstance();
-    char inst = _memory->instAt(_ip.x, _ip.y);
     try {
+        char inst = _memory->instAt(_ip.x, _ip.y);
         (this->*_instImpls.at(inst))();
-    } catch (std::runtime_error &) { // Catch any type of error
+    } catch (...) { // Catch any type of error
         ++_errors;
     }
     _ip += _delta;
@@ -45,6 +45,7 @@ void Organism::cycle()
     size_t curr_cycle = OrganismQueue::getInstance()->cycle_no;
     if (curr_cycle - this->last_snap_cycle > 4200)
     {
+        // TODO: Fix this hardcoded name and before executing check if folder exists
         std::ofstream o_child("organisms/" + std::to_string(this->_id) + "_" + std::to_string(curr_cycle));
         {
             boost::archive::text_oarchive oa_child(o_child);
@@ -242,6 +243,10 @@ void Organism::allocChild()
 
 void Organism::separateChild()
 {
+    if (_childTopLeftPos.x + _childSize.x >= Memory::getInstance()->rows()
+            || _childTopLeftPos.y + _childSize.y >= Memory::getInstance()->cols()) {
+        throw "Part of child is out of memory map, child is not added";
+    }
     Organism *org = new Organism(_childTopLeftPos, _childSize);
     _organismQueue->addInterim(org);
     _childSize = { 0, 0 };

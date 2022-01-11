@@ -26,6 +26,10 @@ public:
     Organism(Point topLeftSize, Point size);
     Organism();
 
+    int id() {
+        return _id;
+    }
+
     ~Organism();
 
     void cycle();

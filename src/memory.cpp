@@ -37,9 +37,19 @@ int Memory::rows() const { return _rows; }
 
 int Memory::cols() const { return _cols; }
 
-char &Memory::instAt(int row, int col) { return (*this)(row, col).inst; }
+char &Memory::instAt(int row, int col) {
+    if (row >= _rows || col >= _cols) {
+        throw "Accessing row / col out of memory map";
+    }
+    return (*this)(row, col).inst;
+}
 
-char Memory::instAt(int row, int col) const { return (*this)(row, col).inst; }
+char Memory::instAt(int row, int col) const {
+    if (row >= _rows || col >= _cols) {
+        throw "Accessing row / col out of memory map";
+    }
+    return (*this)(row, col).inst;
+}
 
 using std::string;
 Point Memory::loadGenome(const string &fileName, Point topLeftPos)
@@ -87,7 +97,7 @@ void Memory::irradiate()
 {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> distr(0, _rows);
+    std::uniform_int_distribution<> distr(0, _rows-1);
 
     int randRow = distr(gen);
     // Assuming that the number of cols is the same as the number of rows
@@ -99,7 +109,7 @@ void Memory::irradiate()
 
 bool Memory::isTimeToKill()
 {
-    auto ratio = std::count_if(_cells, _cells+_rows*_cols, [](const Cell &cell){ return !cell.isFree; })
+    double ratio = (double) std::count_if(_cells, _cells+_rows*_cols, [](const Cell &cell){ return !cell.isFree; })
             / std::count_if(_cells, _cells+_rows*_cols, [](const Cell &cell){ return cell.isFree; });
     constexpr auto memoryFullRatio = 0.9;
     return ratio > memoryFullRatio;

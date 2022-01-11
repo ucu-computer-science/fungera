@@ -132,6 +132,13 @@ int main(int argc, char *argv[])
         sz = m->loadGenome(fn, tlp);
 
         static Organism org(tlp, sz);
+
+        std::ofstream o_parent("organisms/" + std::to_string(org.id()) + "_" + std::to_string(0));
+        {
+            boost::archive::text_oarchive oa_parent(o_parent);
+            oa_parent << org;
+        }
+
         org.setActiveColors();
         OrganismQueue::getInstance()->add(&org);
 
@@ -199,6 +206,7 @@ void make_snapshot() {
 
 void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, unsigned snapCycle)
 {
+
     for (;;) {
         size_t curr_cycle = OrganismQueue::getInstance()->cycle_no;
         QCoreApplication::processEvents();
@@ -208,14 +216,15 @@ void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, unsigned snapCy
 
         cycle(organismQueue, statusPanel);
 
-        if (curr_cycle % 1000 == 0)
+        if (curr_cycle % 10000 == 0)
             OrganismQueue::getInstance()->qStat.printAllStatistics();
 
 
         if (curr_cycle % 5 == 0)
             Memory::getInstance()->irradiate();
 
-        if (curr_cycle % 10000 == 0 && Memory::getInstance()->isTimeToKill())
+        if (curr_cycle % 10000 == 0 &&
+                Memory::getInstance()->isTimeToKill())
             OrganismQueue::getInstance()->killOrganisms();
 
         if (curr_cycle == snapCycle)
