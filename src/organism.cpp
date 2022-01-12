@@ -7,6 +7,8 @@
 #include <ostream>
 #include <fstream>
 #include <string>
+#include <cmath>
+#include <vector>
 
 Organism::Organism(Point topLeftPos, Point size) : _id(_nextID), _topLeftPos(topLeftPos), _size(size), _ip(topLeftPos)
 {
@@ -33,6 +35,17 @@ Organism::~Organism()
         mem.freeArea(_childTopLeftPos, _childSize);
 }
 
+void Organism::self_serialize() {
+    // TODO: Fix this hardcoded name and before executing check if folder exists
+    size_t curr_cycle = OrganismQueue::getInstance()->cycle_no;
+    std::ofstream o_this("organisms/" + std::to_string(this->_id) + "_" + std::to_string(curr_cycle));
+    {
+        boost::archive::text_oarchive oa_child(o_this);
+        oa_child << *this;
+    }
+    this->last_snap_cycle = curr_cycle;
+}
+
 void Organism::cycle()
 {
     Memory &mem = *Memory::getInstance();
@@ -55,13 +68,7 @@ void Organism::cycle()
     size_t curr_cycle = OrganismQueue::getInstance()->cycle_no;
     if (curr_cycle - this->last_snap_cycle > 4200)
     {
-        // TODO: Fix this hardcoded name and before executing check if folder exists
-        std::ofstream o_child("organisms/" + std::to_string(this->_id) + "_" + std::to_string(curr_cycle));
-        {
-            boost::archive::text_oarchive oa_child(o_child);
-            oa_child << *this;
-        }
-        this->last_snap_cycle = curr_cycle;
+        //this->self_serialize();
     }
 }
 
@@ -263,21 +270,8 @@ void Organism::separateChild()
     size_t curr_cycle = OrganismQueue::getInstance()->cycle_no;
     OrganismQueue::getInstance()->qStat.addRelation(org->_id, this->_id, curr_cycle);
 
-    // TODO: Extract snapshoting function for organism to separate method
-    std::ofstream o_parent("organisms/" + std::to_string(this->_id) + "_" + std::to_string(curr_cycle));
-    {
-        boost::archive::text_oarchive oa_parent(o_parent);
-        oa_parent << *this;
-    }
-    this->last_snap_cycle = curr_cycle;
-
-    std::ofstream o_child("organisms/" + std::to_string(org->_id) + "_" + std::to_string(curr_cycle));
-    {
-        boost::archive::text_oarchive oa_child(o_child);
-        oa_child << *org;
-    }
-    org->last_snap_cycle = curr_cycle;
-
+    //this->self_serialize();
+    //org->self_serialize();
 }
 
 void Organism::pushToStack()
@@ -324,6 +318,66 @@ void Organism::jump()
             break;
         }
     }
+}
+
+void Organism::jumpInRange() {
+    std::vector<char> pattern;
+    int i = 1;
+
+    // RANGE FOR JUMP : TODO: Reconsider
+    int range_x = 100,
+        range_y = 100;
+
+    for (; i < range_x; ++i) {
+        char inst = getInstAtOffset(i);
+        if (inst == '.')
+            pattern.push_back(':');
+        else if (inst == ':')
+            pattern.push_back('.');
+        else
+            break;
+    }
+
+    int min_x = fmax(0, _ip.x-range_x);
+    int max_x = fmin(Memory::getInstance()->cols()-1, _ip.x+range_x);
+
+    int min_y = fmax(0, _ip.y-range_y);
+    int max_y = fmin(Memory::getInstance()->rows()-1, _ip.y+range_y);
+
+    std::vector<std::pair<int, int>> possible_res;
+
+    for (int i = min_y; i < max_y; i++) {
+        size_t ctr = 0;
+        for (int j = min_x; j < max_x; j++) {
+            if (getInstAtOffset(i) == pattern[ctr]) {
+                ++ctr;
+            } else {
+                ctr = 0;
+            }
+            if (ctr == pattern.size()) {
+                _ip = getIpAtOffset(i);
+                std::pair<int, int> cu_pair(j, i);
+                possible_res.push_back(cu_pair);
+                break;
+            }
+        }
+    }
+
+    if (possible_res.size())
+    {
+        std::pair<int, int> min_point = possible_res[0];
+        double min_len = std::sqrt(pow(min_point.first-_ip.x, 2)+pow(min_point.second-_ip.y, 2));
+        // first occurance is prioritized
+        for (size_t i = 1; i < possible_res.size(); i++) {
+            double current_len = std::sqrt(pow(possible_res[i].first-_ip.x, 2)
+                                         + pow(possible_res[i].second-_ip.y, 2));
+            if (current_len < min_len) {
+                min_point.first = possible_res[i].first;
+                min_point.second = possible_res[i].second;
+            }
+        }
+    }
+
 }
 
 void Organism::random() {
@@ -412,7 +466,8 @@ const unordered_map<char, InstImpl> Organism::_instImpls{
     { 'S', &Organism::pushToStack },
     { 'P', &Organism::popFromStack },
     { 'J', &Organism::jump},
-    { 'R', &Organism::random}
+    { 'R', &Organism::random},
+    { 'U', &Organism::jumpInRange}
 };
 
 const unordered_map<char, Point> Organism::_opcodes{
@@ -442,7 +497,8 @@ const unordered_map<char, Point> Organism::_opcodes{
     { 'S', { 8, 0 } },
     { 'P', { 8, 1 } },
     { 'J', { 9, 0 } },
-    { 'R', { 9, 1 } }
+    { 'R', { 9, 1 } },
+    { 'U', { 9, 2 } }
 };
 
 int Organism::_nextID = 0;

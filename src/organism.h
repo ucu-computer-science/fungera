@@ -44,6 +44,7 @@ public:
     }
 
     size_t last_snap_cycle = 0;
+    void self_serialize();
 
 signals:
     void cellChanged(int, int);
@@ -80,6 +81,7 @@ private:
     void popFromStack();
     void jump();
     void random();
+    void jumpInRange();
 
     // TODO: Rename Ip to IP
     Point getIpAtOffset(int offset);
