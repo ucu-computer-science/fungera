@@ -13,6 +13,7 @@ struct Cell
     bool isFree = true;
     // TODO: Alias this enum by a custom one
     Qt::GlobalColor bgColor = Qt::white;
+    Qt::GlobalColor lastBgColor = Qt::white;
 
     friend class boost::serialization::access;
     template<class Archive>

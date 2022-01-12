@@ -31,14 +31,21 @@ Organism::~Organism()
 
 void Organism::cycle()
 {
-    OrganismQueue *oq = OrganismQueue::getInstance();
+    Memory &mem = *Memory::getInstance();
+    char inst = mem.instAt(_ip.x, _ip.y);
+
     try {
         char inst = _memory->instAt(_ip.x, _ip.y);
         (this->*_instImpls.at(inst))();
     } catch (...) { // Catch any type of error
         ++_errors;
     }
+    mem(_ip.x, _ip.y).bgColor = mem(_ip.x, _ip.y).lastBgColor;
+    emit cellChanged(_ip.x, _ip.y);
     _ip += _delta;
+    // TODO: Encapsulate the change of the color FUCK
+    mem(_ip.x, _ip.y).bgColor = Qt::red;
+    emit cellChanged(_ip.x, _ip.y);
 
 
     // TODO: Extract snapshoting function for organism to separate method
@@ -311,8 +318,7 @@ void Organism::jump()
             ctr = 0;
         }
         if (ctr == pattern.size()) {
-            _ip = getIpAtOffset( i );
-
+            _ip = getIpAtOffset(i);
             break;
         }
     }
@@ -346,24 +352,28 @@ char Organism::getInstAtOffset(int offset)
 
 void Organism::setColors(Qt::GlobalColor frameColor, Qt::GlobalColor internalColor)
 {
+    Memory &mem = *Memory::getInstance();
+
     int row = _topLeftPos.x;
     int lastCol = _topLeftPos.y + _size.y;
-    for (int col = _topLeftPos.y; col < lastCol; ++col)
+    for (int col = _topLeftPos.y; col < lastCol; ++col) {
+        Cell &cell = mem(row, col);
         (*_memory)(row, col).bgColor = frameColor;
+    }
 
     ++row;
     int lastRow = _topLeftPos.x + _size.x - 1;
     for (; row < lastRow; ++row) {
         int col = _topLeftPos.y;
-        (*_memory)(row, col).bgColor = frameColor;
+        mem(row, col).bgColor = mem(row, col).lastBgColor = frameColor;
         ++col;
         for (; col < lastCol-1; ++col)
-            (*_memory)(row, col).bgColor = internalColor;
-        (*_memory)(row, col).bgColor = frameColor;
+            mem(row, col).bgColor = mem(row, col).lastBgColor = internalColor;
+        mem(row, col).bgColor = mem(row, col).lastBgColor = frameColor;
     }
 
     for (int col = _topLeftPos.y; col < lastCol; ++col)
-        (*_memory)(row, col).bgColor = frameColor;
+        mem(row, col).bgColor = mem(row, col).lastBgColor = frameColor;
 
     emit colorsChanged(_topLeftPos, _size);
 }
