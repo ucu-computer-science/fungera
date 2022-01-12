@@ -45,7 +45,6 @@ void Organism::cycle()
     }
     mem(_ip.x, _ip.y).bgColor = mem(_ip.x, _ip.y).lastBgColor;
     emit cellChanged(_ip.x, _ip.y);
-//    if (mem(_ip.x, _ip.y).bgColor == mem(_ip.x, _ip.y).lastBgColor) emit cellChanged(_ip.x, _ip.y);
     _ip += _delta;
     // TODO: Encapsulate the change of the color FUCK
     mem(_ip.x, _ip.y).bgColor = Qt::red;
@@ -361,7 +360,7 @@ void Organism::setColors(Qt::GlobalColor frameColor, Qt::GlobalColor internalCol
     int lastCol = _topLeftPos.y + _size.y;
     for (int col = _topLeftPos.y; col < lastCol; ++col) {
         Cell &cell = mem(row, col);
-        (*_memory)(row, col).bgColor = frameColor;
+        cell.bgColor = cell.lastBgColor = frameColor;
     }
 
     ++row;
