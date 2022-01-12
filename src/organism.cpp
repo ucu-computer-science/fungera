@@ -14,6 +14,10 @@ Organism::Organism(Point topLeftPos, Point size) : _id(_nextID), _topLeftPos(top
     connect(this, &Organism::colorsChanged, MemoryView::getInstance(), &MemoryView::paintArea);
 
     setInactiveColors();
+    Memory &mem = *Memory::getInstance();
+    Cell &cell = mem(_ip.x, _ip.y);
+    cell.bgColor = Qt::red;
+//    emit cellChanged(_ip.x, _ip.y); // No effect warning
 
     ++_nextID;
 }
@@ -32,16 +36,16 @@ Organism::~Organism()
 void Organism::cycle()
 {
     Memory &mem = *Memory::getInstance();
-    char inst = mem.instAt(_ip.x, _ip.y);
+    char inst = _memory->instAt(_ip.x, _ip.y);
 
     try {
-        char inst = _memory->instAt(_ip.x, _ip.y);
         (this->*_instImpls.at(inst))();
     } catch (...) { // Catch any type of error
         ++_errors;
     }
     mem(_ip.x, _ip.y).bgColor = mem(_ip.x, _ip.y).lastBgColor;
     emit cellChanged(_ip.x, _ip.y);
+//    if (mem(_ip.x, _ip.y).bgColor == mem(_ip.x, _ip.y).lastBgColor) emit cellChanged(_ip.x, _ip.y);
     _ip += _delta;
     // TODO: Encapsulate the change of the color FUCK
     mem(_ip.x, _ip.y).bgColor = Qt::red;
@@ -60,7 +64,6 @@ void Organism::cycle()
         }
         this->last_snap_cycle = curr_cycle;
     }
-
 }
 
 void Organism::setActiveColors()
