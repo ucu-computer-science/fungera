@@ -3,11 +3,13 @@
 #include "memoryview.h"
 #include "organismqueue.h"
 #include "src/statistics.h"
+#include <algorithm>
 #include <iostream>
 #include <ostream>
 #include <fstream>
 #include <string>
 #include <cmath>
+#include <utility>
 #include <vector>
 
 Organism::Organism(Point topLeftPos, Point size) : _id(_nextID), _topLeftPos(topLeftPos), _size(size), _ip(topLeftPos)
@@ -110,6 +112,7 @@ void Organism::setDeltaLeft()
 
 void Organism::findPattern()
 {
+    // TODO: !!!!!! this function probably is not working correctly: it misses possible patterns if they are subpatterns of another incorrect pattern!!!!
     std::vector<char> pattern;
     int i = 2;
     int maxI = std::max(_size.x, _size.y);
@@ -292,6 +295,7 @@ void Organism::popFromStack()
 
 void Organism::jump()
 {
+    // TODO: !!!!!! Jump probably is not working correctly: it misses possible patterns if they are subpatterns of another incorrect pattern!!!!
     std::vector<char> pattern;
     int i = 1;
     // RANGE FOR JUMP : TODO: Reconsider
@@ -321,12 +325,13 @@ void Organism::jump()
 }
 
 void Organism::jumpInRange() {
+    // TODO: !!!!!! Jump is not working correctly: it misses possible patterns if they are subpatterns of another incorrect pattern!!!!
     std::vector<char> pattern;
     int i = 1;
 
     // RANGE FOR JUMP : TODO: Reconsider
-    int range_x = 100,
-        range_y = 100;
+    int range_x = 20,
+        range_y = 20;
 
     for (; i < range_x; ++i) {
         char inst = getInstAtOffset(i);
@@ -346,25 +351,111 @@ void Organism::jumpInRange() {
 
     std::vector<std::pair<int, int>> possible_res;
 
-    for (int i = min_y; i < max_y; i++) {
-        size_t ctr = 0;
-        for (int j = min_x; j < max_x; j++) {
-            if (getInstAtOffset(i) == pattern[ctr]) {
-                ++ctr;
-            } else {
-                ctr = 0;
+    std::vector<std::string> possible_strs;
+
+    // Works in some cases
+    if (_delta.x == -1) {
+        for (int y = min_y; y <= max_y; y++) {
+            //size_t ctr = 0;
+            for (int x = max_x; x >= min_x; x++) {
+                //curr_str += _memory->instAt(x, y);
+                //if (_memory->instAt(x, y) == pattern[ctr]) {
+                    //++ctr;
+                //} else {
+                    //ctr = 0;
+                //}
+                //if (ctr == pattern.size()) {
+                    //_ip = getIpAtOffset(x);
+                    //std::pair<int, int> cu_pair(x, y);
+                    //possible_res.push_back(cu_pair);
+                    //break;
+                //}
             }
-            if (ctr == pattern.size()) {
-                _ip = getIpAtOffset(i);
-                std::pair<int, int> cu_pair(j, i);
-                possible_res.push_back(cu_pair);
-                break;
+        }
+    }
+    else if (_delta.x == 1) {
+        for (int y = min_y; y <= max_y; y++) {
+            //size_t ctr = 0;
+            for (int x = min_x; x <= max_x; x++) {
+                //curr_str += _memory->instAt(x, y);
+                //if (_memory->instAt(x, y) == pattern[ctr]) {
+                    //++ctr;
+                //} else {
+                    //ctr = 0;
+                //}
+                //if (ctr == pattern.size()) {
+                    //_ip = getIpAtOffset(x);
+                    //std::pair<int, int> cu_pair(x, y);
+                    //possible_res.push_back(cu_pair);
+                    //break;
+                //}
+            }
+        }
+    }
+    else if (_delta.y == 1) {
+        for (int x = min_x; x <= max_x; x++) {
+            //size_t ctr = 0;
+            std::string row_str = "";
+            for (int y = min_y; y <= max_y; y++) {
+                row_str += _memory->instAt(x, y);
+                //if (_memory->instAt(x, y) == pattern[ctr]) {
+                    //++ctr;
+                //} else {
+                    //ctr = 0;
+                //}
+                //if (ctr == pattern.size()) {
+                    //std::pair<int, int> cu_pair(x, y);
+                    //possible_res.push_back(cu_pair);
+                    //break;
+                //}
+            }
+            possible_strs.push_back(row_str);
+        }
+    }
+    else if (_delta.y == -1) {
+        for (int x = min_x; x <= max_x; x++) {
+            //size_t ctr = 0;
+            for (int y = max_y; y >= min_y; y++) {
+                //curr_str += _memory->instAt(x, y);
+                //if (_memory->instAt(x, y) == pattern[ctr]) {
+                    //++ctr;
+                //} else {
+                    //ctr = 0;
+                //}
+                //if (ctr == pattern.size()) {
+                    //_ip = getIpAtOffset(x);
+                    //std::pair<int, int> cu_pair(x, y);
+                    //possible_res.push_back(cu_pair);
+                    //break;
+                //}
             }
         }
     }
 
+    // Another attermpt to implement
+    std::string pattern_str = "";
+    for (char c : pattern) {
+        pattern_str += c;
+    }
+
+    int ax = std::min(_ip.x-range_x, range_x),
+        ay = std::min(_ip.y-range_y, range_y);
+
+    std::vector<std::pair<int, int>> possible_points;
+
     if (possible_res.size())
     {
+        for (int i = 0; i < possible_strs.size(); i++)
+        {
+            size_t last_pos = 0;
+            while (true) {
+                int res = possible_strs[i].find(pattern_str, last_pos);
+                if (res == std::string::npos)
+                    break;
+                last_pos = res;
+                // std::pair<int, int> cu_point(min_x+res+pattern_str.size(), min_y+);
+            }
+        }
         std::pair<int, int> min_point = possible_res[0];
         double min_len = std::sqrt(pow(min_point.first-_ip.x, 2)+pow(min_point.second-_ip.y, 2));
         // first occurance is prioritized
@@ -376,7 +467,10 @@ void Organism::jumpInRange() {
                 min_point.second = possible_res[i].second;
             }
         }
+        _ip.x = min_point.first;
+        _ip.y = min_point.second;
     }
+    int a = 0;
 
 }
 
@@ -397,7 +491,7 @@ Point Organism::getIpAtOffset(int offset)
 char Organism::getInstAtOffsetAbs(Point offset)
 {
     Point ipAtOffset = _topLeftPos + offset;
-    return _memory->instAt(ipAtOffset.x, ipAtOffset.y);;
+    return _memory->instAt(ipAtOffset.x, ipAtOffset.y);
 }
 
 char Organism::getInstAtOffset(int offset)
