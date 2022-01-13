@@ -118,7 +118,6 @@ void Organism::setDeltaLeft()
 
 void Organism::findPattern()
 {
-    // TODO: !!!!!! this function probably is not working correctly: it misses possible patterns if they are subpatterns of another incorrect pattern!!!!
     std::vector<char> pattern;
     int i = 2;
     int maxI = std::max(_size.x, _size.y);
@@ -138,6 +137,7 @@ void Organism::findPattern()
         if (getInstAtOffset(i) == pattern[ctr]) {
             ++ctr;
         } else {
+            i -= ctr;
             ctr = 0;
         }
         if (ctr == pattern.size()) {
