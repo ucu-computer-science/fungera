@@ -324,16 +324,19 @@ void Organism::jump()
     }
 }
 
+static Point get_alt_delta(Point delta) {
+    Point alt_delta(delta.x ? 0 : 1, delta.y ? 0 : 1);
+    return alt_delta;
+}
+
 void Organism::jumpInRange() {
-    // TODO: !!!!!! Jump is not working correctly: it misses possible patterns if they are subpatterns of another incorrect pattern!!!!
     std::vector<char> pattern;
     int i = 1;
 
     // RANGE FOR JUMP : TODO: Reconsider
-    int range_x = 20,
-        range_y = 20;
+    int range_o = 100;
 
-    for (; i < range_x; ++i) {
+    for (; i < range_o; ++i) {
         char inst = getInstAtOffset(i);
         if (inst == '.')
             pattern.push_back(':');
@@ -343,126 +346,100 @@ void Organism::jumpInRange() {
             break;
     }
 
-    int min_x = fmax(0, _ip.x-range_x);
-    int max_x = fmin(Memory::getInstance()->cols()-1, _ip.x+range_x);
+    int min_x = fmax(0, _ip.x-range_o);
+    int max_x = fmin(Memory::getInstance()->cols()-1, _ip.x+range_o);
 
-    int min_y = fmax(0, _ip.y-range_y);
-    int max_y = fmin(Memory::getInstance()->rows()-1, _ip.y+range_y);
+    int min_y = fmax(0, _ip.y-range_o);
+    int max_y = fmin(Memory::getInstance()->rows()-1, _ip.y+range_o);
 
     std::vector<std::pair<int, int>> possible_res;
+    int init_ip_x = _ip.x,
+        init_ip_y = _ip.y;
 
-    std::vector<std::string> possible_strs;
-
-    // Works in some cases
     if (_delta.x == -1) {
         for (int y = min_y; y <= max_y; y++) {
-            //size_t ctr = 0;
-            for (int x = max_x; x >= min_x; x++) {
-                //curr_str += _memory->instAt(x, y);
-                //if (_memory->instAt(x, y) == pattern[ctr]) {
-                    //++ctr;
-                //} else {
-                    //ctr = 0;
-                //}
-                //if (ctr == pattern.size()) {
-                    //_ip = getIpAtOffset(x);
-                    //std::pair<int, int> cu_pair(x, y);
-                    //possible_res.push_back(cu_pair);
-                    //break;
-                //}
+            size_t ctr = 0;
+            for (int x = max_x; x >= min_x; x--) {
+                if (_memory->instAt(x, y) == pattern[ctr]) {
+                    ++ctr;
+                } else {
+                    x = x + ctr;
+                    ctr = 0;
+                }
+                if (ctr == pattern.size()) {
+                    std::pair<int, int> cu_pair(x, y);
+                    possible_res.push_back(cu_pair);
+                    break;
+                }
             }
         }
     }
     else if (_delta.x == 1) {
         for (int y = min_y; y <= max_y; y++) {
-            //size_t ctr = 0;
+            size_t ctr = 0;
             for (int x = min_x; x <= max_x; x++) {
-                //curr_str += _memory->instAt(x, y);
-                //if (_memory->instAt(x, y) == pattern[ctr]) {
-                    //++ctr;
-                //} else {
-                    //ctr = 0;
-                //}
-                //if (ctr == pattern.size()) {
-                    //_ip = getIpAtOffset(x);
-                    //std::pair<int, int> cu_pair(x, y);
-                    //possible_res.push_back(cu_pair);
-                    //break;
-                //}
+                if (_memory->instAt(x, y) == pattern[ctr]) {
+                    ++ctr;
+                } else {
+                    x = x - ctr;
+                    ctr = 0;
+                }
+                if (ctr == pattern.size()) {
+                    std::pair<int, int> cu_pair(x, y);
+                    possible_res.push_back(cu_pair);
+                    break;
+                }
             }
         }
     }
     else if (_delta.y == 1) {
         for (int x = min_x; x <= max_x; x++) {
-            //size_t ctr = 0;
-            std::string row_str = "";
+            size_t ctr = 0;
             for (int y = min_y; y <= max_y; y++) {
-                row_str += _memory->instAt(x, y);
-                //if (_memory->instAt(x, y) == pattern[ctr]) {
-                    //++ctr;
-                //} else {
-                    //ctr = 0;
-                //}
-                //if (ctr == pattern.size()) {
-                    //std::pair<int, int> cu_pair(x, y);
-                    //possible_res.push_back(cu_pair);
-                    //break;
-                //}
+                if (_memory->instAt(x, y) == pattern[ctr]) {
+                    ++ctr;
+                } else {
+                    y = y - ctr;
+                    ctr = 0;
+                }
+                if (ctr == pattern.size()) {
+                    std::pair<int, int> cu_pair(x, y);
+                    possible_res.push_back(cu_pair);
+                    break;
+                }
             }
-            possible_strs.push_back(row_str);
         }
     }
     else if (_delta.y == -1) {
         for (int x = min_x; x <= max_x; x++) {
-            //size_t ctr = 0;
-            for (int y = max_y; y >= min_y; y++) {
-                //curr_str += _memory->instAt(x, y);
-                //if (_memory->instAt(x, y) == pattern[ctr]) {
-                    //++ctr;
-                //} else {
-                    //ctr = 0;
-                //}
-                //if (ctr == pattern.size()) {
-                    //_ip = getIpAtOffset(x);
-                    //std::pair<int, int> cu_pair(x, y);
-                    //possible_res.push_back(cu_pair);
-                    //break;
-                //}
+            size_t ctr = 0;
+            for (int y = max_y; y >= min_y; y--) {
+                if (_memory->instAt(x, y) == pattern[ctr]) {
+                    ++ctr;
+                } else {
+                    y = y + ctr;
+                    ctr = 0;
+                }
+                if (ctr == pattern.size()) {
+                    std::pair<int, int> cu_pair(x, y);
+                    possible_res.push_back(cu_pair);
+                    break;
+                }
             }
         }
     }
-
-    // Another attermpt to implement
-    std::string pattern_str = "";
-    for (char c : pattern) {
-        pattern_str += c;
-    }
-
-    int ax = std::min(_ip.x-range_x, range_x),
-        ay = std::min(_ip.y-range_y, range_y);
-
-    std::vector<std::pair<int, int>> possible_points;
 
     if (possible_res.size())
     {
-        for (int i = 0; i < possible_strs.size(); i++)
-        {
-            size_t last_pos = 0;
-            while (true) {
-                int res = possible_strs[i].find(pattern_str, last_pos);
-                if (res == std::string::npos)
-                    break;
-                last_pos = res;
-                // std::pair<int, int> cu_point(min_x+res+pattern_str.size(), min_y+);
-            }
-        }
         std::pair<int, int> min_point = possible_res[0];
         double min_len = std::sqrt(pow(min_point.first-_ip.x, 2)+pow(min_point.second-_ip.y, 2));
-        // first occurance is prioritized
+
+        // First occurance is prioritized
         for (size_t i = 1; i < possible_res.size(); i++) {
             double current_len = std::sqrt(pow(possible_res[i].first-_ip.x, 2)
-                                         + pow(possible_res[i].second-_ip.y, 2));
+                    + pow(possible_res[i].second-_ip.y, 2));
             if (current_len < min_len) {
+                min_len = current_len;
                 min_point.first = possible_res[i].first;
                 min_point.second = possible_res[i].second;
             }
@@ -470,8 +447,11 @@ void Organism::jumpInRange() {
         _ip.x = min_point.first;
         _ip.y = min_point.second;
     }
-    int a = 0;
-
+    else {
+        _ip.x = init_ip_x;
+        _ip.y = init_ip_y;
+    }
+        
 }
 
 void Organism::random() {
