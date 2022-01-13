@@ -131,6 +131,12 @@ void Organism::findPattern()
             break;
     }
 
+    if (!pattern.size())
+    {
+        std::cerr << "findPattern is empty" << std::endl;
+        throw "findPattern is empty";
+    }
+
     ++i;
     size_t ctr = 0;
     for (; i < maxI; ++i) {
@@ -256,14 +262,12 @@ void Organism::allocChild()
     int maxI = std::max(_memory->rows(), _memory->cols());
     for (int i = 3; i < maxI; ++i) {
         _childTopLeftPos = getIpAtOffset(i);
+        if (_childTopLeftPos.x > _memory->rows()
+                || _childTopLeftPos.y > _memory->cols()) {
+        }
         if (_memory->isAreaFree(_childTopLeftPos, _childSize)) {
             char reg2 = getInstAtOffset(2);
             _regs.at(reg2) = _childTopLeftPos;
-            if (_childTopLeftPos.x > _memory->rows()
-                    || _childTopLeftPos.y > _memory->cols()) {
-                std::cerr << "Trying to allocate child organism out of memory map" << std::endl;
-                throw "Child allocation out of memory map";
-            }
             emit regChanged(reg2);
             _memory->allocArea(_childTopLeftPos, _childSize);
             return;
@@ -502,7 +506,15 @@ void Organism::randomDelta() {
 
 Point Organism::getIpAtOffset(int offset)
 {
-    return _ip + offset*_delta;
+    Point ip_at_offset = _ip+offset*_delta;
+    if (ip_at_offset.x < 0 || ip_at_offset.x >= Memory::getInstance()->rows()
+            || ip_at_offset.y < 0 || ip_at_offset.y >= Memory::getInstance()->cols())
+    {
+        std::cerr << "getIpAtOffset got out of bounds" << std::endl;
+        throw "getIpAtOffset got out of bounds";
+
+    }
+    return ip_at_offset;
 }
 
 char Organism::getInstAtOffsetAbs(Point offset)

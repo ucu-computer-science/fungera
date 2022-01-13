@@ -28,7 +28,7 @@ using namespace boost::program_options;
 int main(int argc, char *argv[])
 { 
 
-    srand(1);
+    srand(3);
 
     QApplication a(argc, argv);
     QWidget wgt;

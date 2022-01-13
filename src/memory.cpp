@@ -38,17 +38,17 @@ int Memory::rows() const { return _rows; }
 int Memory::cols() const { return _cols; }
 
 char &Memory::instAt(int row, int col) {
-    if (row >= _rows || col >= _cols) {
-        std::cerr << "Accessing row / col out of memory map" << std::endl;
-        throw "Accessing row / col out of memory map";
+    if (row < 0 || row >= _rows || col < 0 || col >= _cols) {
+        std::cerr << "Accessing row/col out of memory map" << std::endl;
+        throw "Accessing row/col out of memory map";
     }
     return (*this)(row, col).inst;
 }
 
 char Memory::instAt(int row, int col) const {
-    if (row >= _rows || col >= _cols) {
+    if (row < 0 || row >= _rows || col < 0 || col >= _cols) {
         std::cerr << "Accessing row/col out of memory map" << std::endl;
-        throw "Accessing row / col out of memory map";
+        throw "Accessing row/col out of memory map";
     }
     return (*this)(row, col).inst;
 }
@@ -97,7 +97,7 @@ Cell Memory::operator()(int row, int col) const { return _cells[row * _cols + co
 using std::vector;
 void Memory::irradiate()
 {
-    static std::mt19937 gen(1 /* set seed here */);
+    static std::mt19937 gen(3 /* set seed here */);
     std::uniform_int_distribution<> distr(0, _rows-1);
 
     int randRow = distr(gen);
