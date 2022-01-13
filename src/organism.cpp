@@ -51,9 +51,9 @@ void Organism::self_serialize() {
 void Organism::cycle()
 {
     Memory &mem = *Memory::getInstance();
-    char inst = _memory->instAt(_ip.x, _ip.y);
 
     try {
+        char inst = _memory->instAt(_ip.x, _ip.y);
         (this->*_instImpls.at(inst))();
     } catch (...) { // Catch any type of error
         ++_errors;
