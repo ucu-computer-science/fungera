@@ -136,10 +136,14 @@ int main(int argc, char *argv[])
 
         static Organism org(tlp, sz);
 
+        try {
         std::ofstream o_parent("organisms/" + std::to_string(org.id()) + "_" + std::to_string(0));
         {
             boost::archive::text_oarchive oa_parent(o_parent);
             oa_parent << org;
+        }
+        } catch (std::exception &e) {
+            std::cerr << e.what() << '\n';
         }
 
         org.setActiveColors();

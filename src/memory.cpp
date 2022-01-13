@@ -95,13 +95,13 @@ Cell Memory::operator()(int row, int col) const { return _cells[row * _cols + co
 using std::vector;
 void Memory::irradiate()
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    static std::mt19937 gen(1 /* set seed here */);
     std::uniform_int_distribution<> distr(0, _rows-1);
 
     int randRow = distr(gen);
     // Assuming that the number of cols is the same as the number of rows
     int randCol = distr(gen);
+//    std::cout << "randRow: " << randRow << " randCol: " << randCol << std::endl;
     vector<char> instructions{ '.', ':', 'a', 'b', 'c', 'd', 'x', 'y', '^', 'v', '<', '>', '&',
                                '?', '1', '0', '-', '+', '~', 'L', 'W', '@', '$', 'S', 'P' };
     (*this).instAt(randRow, randCol) = *select_randomly(instructions.begin(), instructions.end());
