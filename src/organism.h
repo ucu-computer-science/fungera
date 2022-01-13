@@ -82,6 +82,7 @@ private:
     void jump();
     void random();
     void jumpInRange();
+    void randomDelta();
 
     // TODO: Rename Ip to IP
     Point getIpAtOffset(int offset);

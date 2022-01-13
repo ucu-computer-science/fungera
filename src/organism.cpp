@@ -329,6 +329,12 @@ static Point get_alt_delta(Point delta) {
     return alt_delta;
 }
 
+static Point get_reverse_delta(Point delta) {
+    if (delta.x == 0) return Point(delta.x, delta.y * -1);
+    if (delta.y == 0) return Point(delta.x * -1, delta.y);
+    return delta;
+}
+
 void Organism::jumpInRange() {
     std::vector<char> pattern;
     int i = 1;
@@ -460,7 +466,21 @@ void Organism::random() {
     int rand_y = rand() % 2;
     _regs.at(reg) = { rand_x, rand_y };
     emit regChanged(reg);
-//    std::cout << rand_x << " " << rand_y << std::endl;
+}
+
+void Organism::randomDelta() {
+
+    std::vector<Point> deltas =
+            {std::vector{Point{-1, 0},  // up
+                         Point{1, 0},   // down
+                         Point{0, 1},   // right
+                         Point{0, -1}}  // left
+            };
+
+    deltas.erase(std::remove(deltas.begin(), deltas.end(), get_reverse_delta(_delta)), deltas.end());
+    int rand_i = rand() % deltas.size();
+    _delta.x = deltas[rand_i].x;
+    _delta.y = deltas[rand_i].y;
 }
 
 Point Organism::getIpAtOffset(int offset)
@@ -541,7 +561,8 @@ const unordered_map<char, InstImpl> Organism::_instImpls{
     { 'P', &Organism::popFromStack },
     { 'J', &Organism::jump},
     { 'R', &Organism::random},
-    { 'U', &Organism::jumpInRange}
+    { 'U', &Organism::jumpInRange},
+    { '#', &Organism::randomDelta}
 };
 
 const unordered_map<char, Point> Organism::_opcodes{
@@ -572,7 +593,8 @@ const unordered_map<char, Point> Organism::_opcodes{
     { 'P', { 8, 1 } },
     { 'J', { 9, 0 } },
     { 'R', { 9, 1 } },
-    { 'U', { 9, 2 } }
+    { 'U', { 9, 2 } },
+    { '#', { 9, 3 } }
 };
 
 int Organism::_nextID = 0;
