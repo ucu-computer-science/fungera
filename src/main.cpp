@@ -51,6 +51,7 @@ int main(int argc, char *argv[])
 
     bool isRestore = false;
     bool isCheck = false;
+    bool drawIP = false;
     int instructionSetIdx = 0;
     unsigned snapCycle = 0;
 
@@ -64,6 +65,7 @@ int main(int argc, char *argv[])
             ("chack,c", "Checks concrete organism from snapshot for vital parameters and possibility to replicate if true. Also runs simulation with it. If both restore and check are specified, check is prioritized")
             ("instr-set,i", value<int>()->default_value(0), "Instruction set index on which simulation will be ran")
             ("snap-cycle,s", value<int>()->default_value(0), "Snapshot cycle -- on which cycle snapshot will be done. 0 defaults to never")
+            ("ip,p", "Whether to draw Instruction pointer or not")
             ("filename,f", value<string>()->default_value(""), "Name of file that contains genome of an organism");
 
         store(parse_command_line(argc, argv, desc), vm);
@@ -81,6 +83,8 @@ int main(int argc, char *argv[])
                 isRestore = true;
             if (vm.count("check"))
                 isCheck = true;
+            if (vm.count("ip"))
+                drawIP = true;
 
             instructionSetIdx = vm["instr-set"].as<int>();
             snapCycle = vm["snap-cycle"].as<int>();
@@ -130,6 +134,7 @@ int main(int argc, char *argv[])
         sp = new StatusPanel(org);
     }
     else {
+        system("mkdir -p organisms");
         system("rm organisms/*");
 
         sz = m->loadGenome(fn, tlp);
@@ -151,6 +156,8 @@ int main(int argc, char *argv[])
 
         sp = new StatusPanel(&org);
     }
+
+    OrganismQueue::getInstance()->setDrawIP(drawIP);
 
 
     QPushButton *runBtn = new QPushButton("Run");

@@ -55,16 +55,22 @@ void Organism::cycle()
     try {
         char inst = _memory->instAt(_ip.x, _ip.y);
         (this->*_instImpls.at(inst))();
+
+        bool draw = OrganismQueue::getInstance()->drawIP;
+        if (draw)
+        {
+            mem(_ip.x, _ip.y).bgColor = mem(_ip.x, _ip.y).lastBgColor;
+            emit cellChanged(_ip.x, _ip.y);
+        }
+        _ip += _delta;
+        if (draw) {
+            // TODO: Encapsulate the change of the color FUCK
+            mem(_ip.x, _ip.y).bgColor = Qt::red;
+            emit cellChanged(_ip.x, _ip.y);
+        }
     } catch (...) { // Catch any type of error
         ++_errors;
     }
-    mem(_ip.x, _ip.y).bgColor = mem(_ip.x, _ip.y).lastBgColor;
-    emit cellChanged(_ip.x, _ip.y);
-    _ip += _delta;
-    // TODO: Encapsulate the change of the color FUCK
-    mem(_ip.x, _ip.y).bgColor = Qt::red;
-    emit cellChanged(_ip.x, _ip.y);
-
 
     // TODO: Extract snapshoting function for organism to separate method
     size_t curr_cycle = OrganismQueue::getInstance()->cycle_no;
@@ -253,6 +259,11 @@ void Organism::allocChild()
         if (_memory->isAreaFree(_childTopLeftPos, _childSize)) {
             char reg2 = getInstAtOffset(2);
             _regs.at(reg2) = _childTopLeftPos;
+            if (_childTopLeftPos.x > _memory->rows()
+                    || _childTopLeftPos.y > _memory->cols()) {
+                std::cerr << "Trying to allocate child organism out of memory map" << std::endl;
+                throw "Child allocation out of memory map";
+            }
             emit regChanged(reg2);
             _memory->allocArea(_childTopLeftPos, _childSize);
             return;
@@ -264,7 +275,13 @@ void Organism::separateChild()
 {
     if (_childTopLeftPos.x + _childSize.x >= Memory::getInstance()->rows()
             || _childTopLeftPos.y + _childSize.y >= Memory::getInstance()->cols()) {
-        throw "Part of child is out of memory map, child is not added";
+        std::cerr << "Part of child is out of memory map, child is not separated" << std::endl;
+        throw "Child out of memory map";
+    }
+    if (_childSize.x == 0 || _childSize.y == 0)
+    {
+        std::cerr << "Trying to allocate child with one of the size dimentions = 0" << std::endl;
+        throw "Wrong child size on separate";
     }
     Organism *org = new Organism(_childTopLeftPos, _childSize);
     _organismQueue->addInterim(org);

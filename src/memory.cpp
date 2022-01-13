@@ -39,6 +39,7 @@ int Memory::cols() const { return _cols; }
 
 char &Memory::instAt(int row, int col) {
     if (row >= _rows || col >= _cols) {
+        std::cerr << "Accessing row / col out of memory map" << std::endl;
         throw "Accessing row / col out of memory map";
     }
     return (*this)(row, col).inst;
@@ -46,6 +47,7 @@ char &Memory::instAt(int row, int col) {
 
 char Memory::instAt(int row, int col) const {
     if (row >= _rows || col >= _cols) {
+        std::cerr << "Accessing row/col out of memory map" << std::endl;
         throw "Accessing row / col out of memory map";
     }
     return (*this)(row, col).inst;
@@ -101,9 +103,9 @@ void Memory::irradiate()
     int randRow = distr(gen);
     // Assuming that the number of cols is the same as the number of rows
     int randCol = distr(gen);
-//    std::cout << "randRow: " << randRow << " randCol: " << randCol << std::endl;
+    // TODO: make possiblity to chooce possible instructions for mutations
     vector<char> instructions{ '.', ':', 'a', 'b', 'c', 'd', 'x', 'y', '^', 'v', '<', '>', '&',
-                               '?', '1', '0', '-', '+', '~', 'L', 'W', '@', '$', 'S', 'P' };
+                               '?', '1', '0', '-', '+', '~', 'L', 'W', '@', '$', 'S', 'P', 'R', 'U', 'J' };
     (*this).instAt(randRow, randCol) = *select_randomly(instructions.begin(), instructions.end());
 }
 

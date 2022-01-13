@@ -43,6 +43,13 @@ public:
 
     Statistics qStat = Statistics();
 
+    // TODO: reconsider whether these method and field should be in OrganismQueue or in some other class or check this in some other way 
+
+    bool getDrawIP();
+    void setDrawIP(bool value);
+
+    bool drawIP = false;
+
 public slots:
     void selectNextOrg();
     void selectPrevOrg();

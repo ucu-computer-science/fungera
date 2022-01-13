@@ -59,3 +59,11 @@ void OrganismQueue::killOrganisms()
         delete org;
     }
 }
+
+void OrganismQueue::setDrawIP(bool value) {
+    drawIP = value;
+}
+
+bool OrganismQueue::getDrawIP() {
+    return drawIP;
+}
