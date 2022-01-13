@@ -458,9 +458,9 @@ void Organism::random() {
     char reg = getInstAtOffset(1);
     int rand_x = rand() % 2;
     int rand_y = rand() % 2;
-    _regs.at(reg) = { rand_x, rand_y};
+    _regs.at(reg) = { rand_x, rand_y };
     emit regChanged(reg);
-    std::cout << rand_x << " " << rand_y << std::endl;
+//    std::cout << rand_x << " " << rand_y << std::endl;
 }
 
 Point Organism::getIpAtOffset(int offset)
