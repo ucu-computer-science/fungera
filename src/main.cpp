@@ -48,12 +48,14 @@ int main(int argc, char *argv[])
      *     Run this program with -h flag to see usgae
      */
 
-
     bool isRestore = false;
     bool isCheck = false;
     bool drawIP = false;
+    bool isExtract = false;
+    string log_level = "release";
     int instructionSetIdx = 0;
     unsigned snapCycle = 0;
+    unsigned orgSnap = 0;
 
 
     options_description desc{"Options"};
@@ -63,9 +65,12 @@ int main(int argc, char *argv[])
             ("help,h", "Show this help screen")
             ("restore,r", "Restore flag, means that simulation will be restored from snapshots. Ignore it to run simulation from the beggining with single organism with genome, specified with -f")
             ("chack,c", "Checks concrete organism from snapshot for vital parameters and possibility to replicate if true. Also runs simulation with it. If both restore and check are specified, check is prioritized")
+            ("extract", value<string>(), "Extract organism from organism snapshot and memory map from snapshot")
             ("instr-set,i", value<int>()->default_value(0), "Instruction set index on which simulation will be ran")
             ("snap-cycle,s", value<int>()->default_value(0), "Snapshot cycle -- on which cycle snapshot will be done. 0 defaults to never")
+            ("org-snap", value<int>()->default_value(0), "How often to snap each organism individually (each x cycle)")
             ("ip,p", "Whether to draw Instruction pointer or not")
+            ("log-level", value<string>()->default_value("release"), "Possible options: \"debug\", \"release\"")
             ("filename,f", value<string>()->default_value(""), "Name of file that contains genome of an organism");
 
         store(parse_command_line(argc, argv, desc), vm);
@@ -83,11 +88,17 @@ int main(int argc, char *argv[])
                 isRestore = true;
             if (vm.count("check"))
                 isCheck = true;
+            if (vm.count("extract"))
+                isExtract = true;
             if (vm.count("ip"))
                 drawIP = true;
+            if (vm.count("log-level"))
+                if (vm["log-level"].as<string>() == "debug")
+                    log_level = "debug";
 
             instructionSetIdx = vm["instr-set"].as<int>();
             snapCycle = vm["snap-cycle"].as<int>();
+            orgSnap = vm["org-snap"].as<int>();
         }
     }
     catch (const error &ex)
@@ -96,7 +107,11 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    if (isCheck) {
+    if (isExtract) {
+        if (fn == "")
+            std::cerr << "No filename specified. How can I guess your snapshot name?!?" << std::endl;
+    }
+    else if (isCheck) {
         if (fn == "")
             std::cerr << "No filename specified. How can I guess your snapshot name?!?" << std::endl;
 
@@ -111,15 +126,16 @@ int main(int argc, char *argv[])
 
     else if (isRestore) {
         // Restore from snapshot
+        system("rm organisms/*");
         std::cout << "Restoring..." << std::endl;
 
-        std::ifstream ifs_mem("memory_cache");
+        std::ifstream ifs_mem("cache/memory");
         boost::archive::text_iarchive ia_mem(ifs_mem);
 
         ia_mem >> *m;
 
 
-        std::ifstream ifs_q("queue_cache");
+        std::ifstream ifs_q("cache/queue");
         boost::archive::text_iarchive ia_q(ifs_q);
 
         ia_q >> *OrganismQueue::getInstance();
@@ -134,6 +150,7 @@ int main(int argc, char *argv[])
         sp = new StatusPanel(org);
     }
     else {
+        system("mkdir -p cache");
         system("mkdir -p organisms");
         system("rm organisms/*");
 
@@ -158,6 +175,8 @@ int main(int argc, char *argv[])
     }
 
     OrganismQueue::getInstance()->setDrawIP(drawIP);
+    OrganismQueue::getInstance()->setLogLevel(log_level);
+    OrganismQueue::getInstance()->orgSnap = orgSnap;
 
 
     QPushButton *runBtn = new QPushButton("Run");
@@ -203,13 +222,13 @@ int main(int argc, char *argv[])
 void make_snapshot() {
     std::cout << "Serializing..." << std::endl;
 
-    std::ofstream ofs_mem("memory_cache");
+    std::ofstream ofs_mem("cache/memory");
     {
         boost::archive::text_oarchive oa_mem(ofs_mem);
         oa_mem << *Memory::getInstance();
     }
 
-    std::ofstream ofs_q("queue_cache");
+    std::ofstream ofs_q("cache/queue");
     {
         boost::archive::text_oarchive oa_q(ofs_q);
         oa_q << *OrganismQueue::getInstance();
