@@ -52,6 +52,7 @@ int main(int argc, char *argv[])
     bool isCheck = false;
     bool drawIP = false;
     bool isExtract = false;
+    std::string extractFn = "";
     string log_level = "release";
     int instructionSetIdx = 0;
     unsigned snapCycle = 0;
@@ -89,7 +90,10 @@ int main(int argc, char *argv[])
             if (vm.count("check"))
                 isCheck = true;
             if (vm.count("extract"))
+            {
                 isExtract = true;
+                extractFn = vm["extract"].as<string>();
+            }
             if (vm.count("ip"))
                 drawIP = true;
             if (vm.count("log-level"))
@@ -108,8 +112,56 @@ int main(int argc, char *argv[])
     }
 
     if (isExtract) {
-        if (fn == "")
-            std::cerr << "No filename specified. How can I guess your snapshot name?!?" << std::endl;
+
+        std::cout << "Restoring map before extracting..." << std::endl;
+
+        std::ifstream ifs_mem("cache/memory");
+        boost::archive::text_iarchive ia_mem(ifs_mem);
+
+        ia_mem >> *m;
+
+        std::cout << "  Done" << std::endl;
+
+
+        static Organism interim_pseudo_org;
+
+        std::ifstream org_stream(extractFn);
+        boost::archive::text_iarchive ia_org(org_stream);
+
+        ia_org >> interim_pseudo_org;
+
+        std::ofstream extracted_org;
+        std::string extracted_fn = std::to_string(interim_pseudo_org.id()) + "_extracted.gen";
+        extracted_org.open(extracted_fn);
+
+        Point orgTopLeft = interim_pseudo_org.getTopLeftPos();
+        Point orgSize = interim_pseudo_org.getSize();
+        for (int i = 0; i < orgSize.x; i++) {
+            std::string line = "";
+            for (int j = 0; j < orgSize.y; j++) {
+                line += m->instAt(orgTopLeft.x+i, orgTopLeft.y+j);
+            }
+            extracted_org << line << std::endl;
+        }
+        extracted_org.close();
+
+        sz = m->loadGenome(extracted_fn, tlp);
+        static Organism org(tlp, sz);
+
+        try {
+            std::ofstream o_parent("organisms/" + std::to_string(org.id()) + "_" + std::to_string(0));
+            {
+                boost::archive::text_oarchive oa_parent(o_parent);
+                oa_parent << org;
+            }
+        } catch (std::exception &e) {
+            std::cerr << e.what() << '\n';
+        }
+
+        org.setActiveColors();
+        OrganismQueue::getInstance()->add(&org);
+
+        sp = new StatusPanel(&org);
     }
     else if (isCheck) {
         if (fn == "")
@@ -159,11 +211,11 @@ int main(int argc, char *argv[])
         static Organism org(tlp, sz);
 
         try {
-        std::ofstream o_parent("organisms/" + std::to_string(org.id()) + "_" + std::to_string(0));
-        {
-            boost::archive::text_oarchive oa_parent(o_parent);
-            oa_parent << org;
-        }
+            std::ofstream o_parent("organisms/" + std::to_string(org.id()) + "_" + std::to_string(0));
+            {
+                boost::archive::text_oarchive oa_parent(o_parent);
+                oa_parent << org;
+            }
         } catch (std::exception &e) {
             std::cerr << e.what() << '\n';
         }
@@ -253,7 +305,7 @@ void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, unsigned snapCy
             OrganismQueue::getInstance()->qStat.printAllStatistics();
 
 
-        if (curr_cycle % 5 == 0)
+        if (curr_cycle % 3 == 0)
             Memory::getInstance()->irradiate();
 
         if (curr_cycle % 10000 == 0 &&

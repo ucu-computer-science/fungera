@@ -42,6 +42,9 @@ public:
     Point getSize() {
         return _size;
     }
+    Point getTopLeftPos() {
+        return _topLeftPos;
+    }
 
     size_t last_snap_cycle = 0;
     void self_serialize();
@@ -51,7 +54,7 @@ signals:
     void colorsChanged(Point, Point);
 
     // IP changes every cycle anyway
-//    void ipChanged(Point);
+    // void ipChanged(Point);
     void deltaChanged();
     void regChanged(char);
     void errorsChanged();
