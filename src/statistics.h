@@ -12,6 +12,8 @@ class Statistics {
         double entropy(OrganismQueue *oq);
         std::map<Point, int> sizeNOrgs();
         void addRelation(int child_id, int parent_id, size_t cycle_no);
+        static unsigned hammingDistance(Organism *org, Organism *an_org);
+        static std::vector<Point> locationsOfDifference(Organism *org, Organism *an_org);
 
         void printAllStatistics();
 

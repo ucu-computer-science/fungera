@@ -6,6 +6,7 @@
 #include <map>
 
 #include <iostream>
+#include <vector>
 
 double Statistics::entropy(OrganismQueue *oq) {
     // TODO: reconsider variable names
@@ -91,6 +92,27 @@ void Statistics::addRelation(int child_id, int parent_id, size_t cycle_no) {
     evo_tree[child_id] = parent_n_cycle;
     int i = 0;
     i++;
+}
+
+unsigned Statistics::hammingDistance(Organism *org, Organism *an_org) {
+    return Statistics::locationsOfDifference(org, an_org).size();
+}
+
+/*
+ * Returns vector points (absolute) of the first organism (org), which differs from this same relative points or another organism (an_org)
+ */
+std::vector<Point> Statistics::locationsOfDifference(Organism *org, Organism *an_org) {
+    Memory *m = Memory::getInstance();
+    unsigned hamDist = 0;
+    std::vector<Point> locsOfDiff;
+    for (int i = 0; i < org->getSize().x; i++) {
+        for (int j = 0; j < an_org->getSize().y; j++) {
+            if (m->instAt(org->getTopLeftPos().x+i, org->getTopLeftPos().y+j) != m->instAt(an_org->getTopLeftPos().x+i, an_org->getTopLeftPos().y+j)) {
+                locsOfDiff.push_back(Point(org->getTopLeftPos().x+i, org->getTopLeftPos().x+i));
+            }
+        }
+    }
+    return locsOfDiff;
 }
 
 void Statistics::printAllStatistics() {

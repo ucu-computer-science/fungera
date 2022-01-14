@@ -14,6 +14,7 @@
 #include <iostream>
 #include <fstream>
 #include <ostream>
+#include <vector>
 
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
@@ -23,6 +24,7 @@ bool isRunning = true;
 
 void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, unsigned snapCycle);
 void cycle(OrganismQueue *, StatusPanel *);
+void restoreMemoryMap();
 
 using namespace boost::program_options;
 int main(int argc, char *argv[])
@@ -65,8 +67,8 @@ int main(int argc, char *argv[])
         desc.add_options()
             ("help,h", "Show this help screen")
             ("restore,r", "Restore flag, means that simulation will be restored from snapshots. Ignore it to run simulation from the beggining with single organism with genome, specified with -f")
-            ("chack,c", "Checks concrete organism from snapshot for vital parameters and possibility to replicate if true. Also runs simulation with it. If both restore and check are specified, check is prioritized")
-            ("extract", value<string>(), "Extract organism from organism snapshot and memory map from snapshot")
+            ("extract", value<string>(), "Extract organism from organism snapshot and memory map from snapshot to see it on the memory map, run it alone")
+            ("hamming-dist", value<std::vector<string>>(), "Determine hamming distance between snapshots of organisms")
             ("instr-set,i", value<int>()->default_value(0), "Instruction set index on which simulation will be ran")
             ("snap-cycle,s", value<int>()->default_value(0), "Snapshot cycle -- on which cycle snapshot will be done. 0 defaults to never")
             ("org-snap", value<int>()->default_value(0), "How often to snap each organism individually (each x cycle)")
@@ -74,7 +76,9 @@ int main(int argc, char *argv[])
             ("log-level", value<string>()->default_value("release"), "Possible options: \"debug\", \"release\"")
             ("filename,f", value<string>()->default_value(""), "Name of file that contains genome of an organism");
 
-        store(parse_command_line(argc, argv, desc), vm);
+        positional_options_description hamming_files;
+        hamming_files.add("hamming-dist", -1);
+        store(command_line_parser(argc, argv).options(desc).positional(hamming_files).run(), vm);
         notify(vm);
 
         if (vm.count("help"))
@@ -87,12 +91,46 @@ int main(int argc, char *argv[])
                 fn = vm["filename"].as<string>();
             if (vm.count("restore"))
                 isRestore = true;
-            if (vm.count("check"))
-                isCheck = true;
             if (vm.count("extract"))
             {
                 isExtract = true;
                 extractFn = vm["extract"].as<string>();
+            }
+            if (vm.count("hamming-dist"))
+            {
+                std::vector<string> orgs_files = vm["hamming-dist"].as<std::vector<string>>();
+
+                if (orgs_files.size() < 2)
+                {
+                    std::cerr << "Specified not enough files to perform hamming distance (2 required)";
+                    exit(1);
+                }
+                if (orgs_files.size() > 2)
+                {
+                    std::cerr << "Specified too many files to perform hamming distance (2 required). Other are ignored";
+                }
+
+                std::cout << "Restoring memory map before restoring organisms and calculating hamming distance..." << std::endl;
+                restoreMemoryMap();
+                std::cout << "  Done" << std::endl;
+
+                static Organism org, an_org;
+
+                std::ifstream org_stream(orgs_files[0]);
+                boost::archive::text_iarchive ia_org(org_stream);
+                ia_org >> org;
+
+                std::ifstream an_org_stream(orgs_files[1]);
+                boost::archive::text_iarchive ia_an_org(an_org_stream);
+                ia_an_org >> an_org;
+
+                std::cout << "Hamming distance: " << Statistics::hammingDistance(&org, &an_org) << std::endl;
+                std::vector<Point> pointsOfDifference = Statistics::locationsOfDifference(&org, &an_org);
+                for (Point pnt : pointsOfDifference)
+                    std::cout << pnt.x << ", " << pnt.y << std::endl;
+
+                exit(0);
+
             }
             if (vm.count("ip"))
                 drawIP = true;
@@ -112,14 +150,12 @@ int main(int argc, char *argv[])
     }
 
     if (isExtract) {
+        /*
+         * Organism will always appear on the center of simulation but memory map will be trashed by previous memory map. TODO: Fix
+         */
 
-        std::cout << "Restoring map before extracting..." << std::endl;
-
-        std::ifstream ifs_mem("cache/memory");
-        boost::archive::text_iarchive ia_mem(ifs_mem);
-
-        ia_mem >> *m;
-
+        std::cout << "Restoring memory map before extracting..." << std::endl;
+        restoreMemoryMap();
         std::cout << "  Done" << std::endl;
 
 
@@ -163,29 +199,12 @@ int main(int argc, char *argv[])
 
         sp = new StatusPanel(&org);
     }
-    else if (isCheck) {
-        if (fn == "")
-            std::cerr << "No filename specified. How can I guess your snapshot name?!?" << std::endl;
-
-        static Organism *org;
-
-        std::ifstream org_stream(fn);
-        boost::archive::text_iarchive ia_org(org_stream);
-
-        ia_org >> *org;
-        OrganismQueue::getInstance()->add(org);
-    }
-
     else if (isRestore) {
         // Restore from snapshot
         system("rm organisms/*");
         std::cout << "Restoring..." << std::endl;
 
-        std::ifstream ifs_mem("cache/memory");
-        boost::archive::text_iarchive ia_mem(ifs_mem);
-
-        ia_mem >> *m;
-
+        restoreMemoryMap();
 
         std::ifstream ifs_q("cache/queue");
         boost::archive::text_iarchive ia_q(ifs_q);
@@ -323,4 +342,11 @@ void cycle(OrganismQueue *organismQueue, StatusPanel *statusPanel)
 {
     organismQueue->cycleAll();
     statusPanel->cycle();
+}
+
+void restoreMemoryMap() {
+    std::ifstream ifs_mem("cache/memory");
+    boost::archive::text_iarchive ia_mem(ifs_mem);
+
+    ia_mem >> *Memory::getInstance();
 }
