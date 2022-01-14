@@ -31,6 +31,12 @@ public:
     Organism * getOrganism() {
         return _organisms[0];
     }
+    Organism * getOrganism(int id) {
+        for (Organism *org : _organisms)
+            if (org->id() == id)
+                return _organisms[id];
+        return NULL;
+    }
 
     size_t getOrganismsNum() {
         return _organisms.size();
@@ -48,7 +54,16 @@ public:
     bool getDrawIP();
     void setDrawIP(bool value);
 
+    std::string getLogLevel() {
+        return logLevel;
+    }
+    void setLogLevel(std::string log_level) {
+        logLevel = log_level;
+    }
+
     bool drawIP = false;
+    std::string logLevel = "release";
+    unsigned orgSnap = 0;
 
 public slots:
     void selectNextOrg();

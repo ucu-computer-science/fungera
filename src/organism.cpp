@@ -1,5 +1,4 @@
 #include "organism.h"
-
 #include "memoryview.h"
 #include "organismqueue.h"
 #include "src/statistics.h"
@@ -74,9 +73,9 @@ void Organism::cycle()
 
     // TODO: Extract snapshoting function for organism to separate method
     size_t curr_cycle = OrganismQueue::getInstance()->cycle_no;
-    if (curr_cycle - this->last_snap_cycle > 4200)
+    if (OrganismQueue::getInstance()->orgSnap && curr_cycle - this->last_snap_cycle > OrganismQueue::getInstance()->orgSnap)
     {
-        //this->self_serialize();
+        this->self_serialize();
     }
 }
 
@@ -133,7 +132,8 @@ void Organism::findPattern()
 
     if (!pattern.size())
     {
-        std::cerr << "findPattern is empty" << std::endl;
+        if (OrganismQueue::getInstance()->getLogLevel() == "debug")
+            std::cerr << "findPattern is empty" << std::endl;
         throw "findPattern is empty";
     }
 
@@ -279,12 +279,14 @@ void Organism::separateChild()
 {
     if (_childTopLeftPos.x + _childSize.x >= Memory::getInstance()->rows()
             || _childTopLeftPos.y + _childSize.y >= Memory::getInstance()->cols()) {
-        std::cerr << "Part of child is out of memory map, child is not separated" << std::endl;
+        if (OrganismQueue::getInstance()->getLogLevel() == "debug")
+            std::cerr << "Part of child is out of memory map, child is not separated" << std::endl;
         throw "Child out of memory map";
     }
     if (_childSize.x == 0 || _childSize.y == 0)
     {
-        std::cerr << "Trying to allocate child with one of the size dimentions = 0" << std::endl;
+        if (OrganismQueue::getInstance()->getLogLevel() == "debug")
+            std::cerr << "Trying to allocate child with one of the size dimentions = 0" << std::endl;
         throw "Wrong child size on separate";
     }
     Organism *org = new Organism(_childTopLeftPos, _childSize);
@@ -294,14 +296,24 @@ void Organism::separateChild()
     size_t curr_cycle = OrganismQueue::getInstance()->cycle_no;
     OrganismQueue::getInstance()->qStat.addRelation(org->_id, this->_id, curr_cycle);
 
-    //this->self_serialize();
-    //org->self_serialize();
+    if (OrganismQueue::getInstance()->orgSnap)
+    {
+        this->self_serialize();
+        org->self_serialize();
+    }
 }
 
 void Organism::pushToStack()
 {
     char reg = getInstAtOffset(1);
     Point regConts = _regs.at(reg);
+    // TODO: make stack size as global parameter
+    if (_stack.size() == 7)
+    {
+        if (OrganismQueue::getInstance()->getLogLevel() == "debug")
+            std::cerr << "Pushing to full stack" << std::endl;
+        throw "Pushing to full stack";
+    }
     _stack.push_back(regConts);
     emit pushedToStack();
 }
@@ -330,6 +342,14 @@ void Organism::jump()
         else
             break;
     }
+
+    if (!pattern.size())
+    {
+        if (OrganismQueue::getInstance()->getLogLevel() == "debug")
+            std::cerr << "Pattern of length 0" << std::endl;
+        throw "Pattern of length 0";
+    }
+
     ++i;
     size_t ctr = 0;
     for (; i < range_j; ++i) {
@@ -382,6 +402,13 @@ void Organism::jumpInRange() {
     std::vector<std::pair<int, int>> possible_res;
     int init_ip_x = _ip.x,
         init_ip_y = _ip.y;
+
+    if (!pattern.size())
+    {
+        if (OrganismQueue::getInstance()->getLogLevel() == "debug")
+            std::cerr << "Pattern of length 0" << std::endl;
+        throw "Pattern of length 0";
+    }
 
     if (_delta.x == -1) {
         for (int y = min_y; y <= max_y; y++) {
@@ -510,7 +537,8 @@ Point Organism::getIpAtOffset(int offset)
     if (ip_at_offset.x < 0 || ip_at_offset.x >= Memory::getInstance()->rows()
             || ip_at_offset.y < 0 || ip_at_offset.y >= Memory::getInstance()->cols())
     {
-        std::cerr << "getIpAtOffset got out of bounds" << std::endl;
+        if (OrganismQueue::getInstance()->getLogLevel() == "debug")
+            std::cerr << "getIpAtOffset got out of bounds" << std::endl;
         throw "getIpAtOffset got out of bounds";
 
     }

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <random>
 #include <vector>
+#include "organismqueue.h"
 
 namespace
 {
@@ -39,7 +40,8 @@ int Memory::cols() const { return _cols; }
 
 char &Memory::instAt(int row, int col) {
     if (row < 0 || row >= _rows || col < 0 || col >= _cols) {
-        std::cerr << "Accessing row/col out of memory map" << std::endl;
+        if (OrganismQueue::getInstance()->getLogLevel() == "debug")
+            std::cerr << "Accessing row/col out of memory map" << std::endl;
         throw "Accessing row/col out of memory map";
     }
     return (*this)(row, col).inst;
@@ -47,7 +49,8 @@ char &Memory::instAt(int row, int col) {
 
 char Memory::instAt(int row, int col) const {
     if (row < 0 || row >= _rows || col < 0 || col >= _cols) {
-        std::cerr << "Accessing row/col out of memory map" << std::endl;
+        if (OrganismQueue::getInstance()->getLogLevel() == "debug")
+            std::cerr << "Accessing row/col out of memory map" << std::endl;
         throw "Accessing row/col out of memory map";
     }
     return (*this)(row, col).inst;

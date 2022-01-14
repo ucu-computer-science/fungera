@@ -106,9 +106,21 @@ void Statistics::printAllStatistics() {
 
     std::cout << "Evolution tree:" << std::endl;
     for (std::pair<int, std::pair<int, size_t>> cu_rel: evo_tree)
-        std::cout << "  " << cu_rel.second.first << " -> " << cu_rel.first
-                  << " (cycle " << cu_rel.second.second << ")" << std::endl;
+    {
+        Point parent_size(-1, -1);
+        if (OrganismQueue::getInstance()->getOrganism(cu_rel.second.first) != NULL)
+        {
+            parent_size = OrganismQueue::getInstance()->getOrganism(cu_rel.second.first)->getSize();
+        }
+        Point child_size(-1, -1);
+        if (OrganismQueue::getInstance()->getOrganism(cu_rel.second.first) != NULL)
+        {
+            child_size = OrganismQueue::getInstance()->getOrganism(cu_rel.first)->getSize();
+        }
+        std::cout << "  " << cu_rel.second.first << "(" << parent_size.x << ", " << parent_size.y << ")"
+            << " -> " << cu_rel.first << "(" << child_size.x << ", " << child_size.y << ")"
+            << " (cycle " << cu_rel.second.second << ")" << std::endl;
+    }
 
     std::cout << std::endl;
-
 }
