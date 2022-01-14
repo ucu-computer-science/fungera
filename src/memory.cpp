@@ -97,7 +97,7 @@ Cell Memory::operator()(int row, int col) const { return _cells[row * _cols + co
 using std::vector;
 void Memory::irradiate()
 {
-    static std::mt19937 gen(3 /* set seed here */);
+    static std::mt19937 gen(1 /* set seed here */);
     std::uniform_int_distribution<> distr(0, _rows-1);
 
     int randRow = distr(gen);
