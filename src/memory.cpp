@@ -106,7 +106,7 @@ void Memory::irradiate()
     // TODO: make possiblity to chooce possible instructions for mutations
     vector<char> instructions{ '.', ':', 'a', 'b', 'c', 'd', 'x', 'y', '^', 'v', '<', '>', '&',
                                '?', '1', '0', '-', '+', '~', 'L', 'W', '@', '$', 'S', 'P', 'R', 'U', 'J' };
-    (*this).instAt(randRow, randCol) = *select_randomly(instructions.begin(), instructions.end());
+    (*this).instAt(randRow, randCol) = *select_randomly(instructions.begin(), instructions.end(), gen);
 }
 
 bool Memory::isTimeToKill()
