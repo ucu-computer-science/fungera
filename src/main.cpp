@@ -53,7 +53,8 @@ int main(int argc, char *argv[])
     bool isRestore = false;
     bool isCheck = false;
     bool drawIP = false;
-    bool isExtract = false;
+    bool isExtractAlone = false;
+    bool isExtractInContext = false;
     std::string extractFn = "";
     string log_level = "release";
     int instructionSetIdx = 0;
@@ -67,7 +68,8 @@ int main(int argc, char *argv[])
         desc.add_options()
             ("help,h", "Show this help screen")
             ("restore,r", "Restore flag, means that simulation will be restored from snapshots. Ignore it to run simulation from the beggining with single organism with genome, specified with -f")
-            ("extract", value<string>(), "Extract organism from organism snapshot and memory map from snapshot to see it on the memory map, run it alone")
+            ("extract-alone", value<string>(), "Extract organism from organism snapshot and memory map from snapshot to see it on the memory map and run it alone on empty map")
+            ("extract-in-context", value<string>(), "Extract organism from organism snapshot and memory map from snapshot to see it on the memory map and run it in context next to organisms it were originally (but all other organisms are dead). If both extract-alone and extract-in-context are specified, extract-alone is prioritized")
             ("hamming-dist", value<std::vector<string>>(), "Determine hamming distance between snapshots of organisms")
             ("instr-set,i", value<int>()->default_value(0), "Instruction set index on which simulation will be ran")
             ("snap-cycle,s", value<int>()->default_value(0), "Snapshot cycle -- on which cycle snapshot will be done. 0 defaults to never")
@@ -91,10 +93,15 @@ int main(int argc, char *argv[])
                 fn = vm["filename"].as<string>();
             if (vm.count("restore"))
                 isRestore = true;
-            if (vm.count("extract"))
+            if (vm.count("extract-alone"))
             {
-                isExtract = true;
-                extractFn = vm["extract"].as<string>();
+                isExtractAlone = true;
+                extractFn = vm["extract-alone"].as<string>();
+            }
+            if (vm.count("extract-in-context"))
+            {
+                isExtractInContext = true;
+                extractFn = vm["extract-in-context"].as<string>();
             }
             if (vm.count("hamming-dist"))
             {
@@ -149,12 +156,8 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    if (isExtract) {
-        /*
-         * Organism will always appear on the center of simulation but memory map will be trashed by previous memory map. TODO: Fix
-         */
-
-        std::cout << "Restoring memory map before extracting..." << std::endl;
+    if (isExtractAlone) {
+        std::cout << "Restoring memory map before extracting alone..." << std::endl;
         restoreMemoryMap();
         std::cout << "  Done" << std::endl;
 
@@ -181,6 +184,7 @@ int main(int argc, char *argv[])
         }
         extracted_org.close();
 
+        m->clear();
         sz = m->loadGenome(extracted_fn, tlp);
         static Organism org(tlp, sz);
 
@@ -199,9 +203,57 @@ int main(int argc, char *argv[])
 
         sp = new StatusPanel(&org);
     }
+    else if (isExtractInContext) {
+        std::cout << "Restoring memory map before extracting in context..." << std::endl;
+        restoreMemoryMap();
+        std::cout << "  Done" << std::endl;
+
+        static Organism interim_pseudo_org;
+
+        std::ifstream org_stream(extractFn);
+        boost::archive::text_iarchive ia_org(org_stream);
+
+        ia_org >> interim_pseudo_org;
+
+        std::ofstream extracted_org;
+        std::string extracted_fn = std::to_string(interim_pseudo_org.id()) + "_extracted.gen";
+        extracted_org.open(extracted_fn);
+
+        Point orgTopLeft = interim_pseudo_org.getTopLeftPos();
+        Point orgSize = interim_pseudo_org.getSize();
+        for (int i = 0; i < orgSize.x; i++) {
+            std::string line = "";
+            for (int j = 0; j < orgSize.y; j++) {
+                line += m->instAt(orgTopLeft.x+i, orgTopLeft.y+j);
+            }
+            extracted_org << line << std::endl;
+        }
+        extracted_org.close();
+
+        tlp = orgTopLeft;
+        std::cout << "Organism tlp: " << tlp.x << ", " << tlp.y << std::endl;
+
+        sz = m->loadGenome(extracted_fn, tlp);
+        static Organism org(tlp, sz);
+
+        try {
+            std::ofstream o_parent("organisms/" + std::to_string(org.id()) + "_" + std::to_string(0));
+            {
+                boost::archive::text_oarchive oa_parent(o_parent);
+                oa_parent << org;
+            }
+        } catch (std::exception &e) {
+            std::cerr << e.what() << '\n';
+        }
+
+        org.setActiveColors();
+        OrganismQueue::getInstance()->add(&org);
+
+        sp = new StatusPanel(&org);
+    }
+
     else if (isRestore) {
         // Restore from snapshot
-        system("rm organisms/*");
         std::cout << "Restoring..." << std::endl;
 
         restoreMemoryMap();
@@ -223,7 +275,6 @@ int main(int argc, char *argv[])
     else {
         system("mkdir -p cache");
         system("mkdir -p organisms");
-        system("rm organisms/*");
 
         sz = m->loadGenome(fn, tlp);
 
@@ -281,9 +332,9 @@ int main(int argc, char *argv[])
     wgt.show();
 
     QScrollBar *horBar = mw->horizontalScrollBar();
-    horBar->setValue(horBar->maximum()/2);
+    horBar->setValue(horBar->maximum()*((double)tlp.y/m->cols()));
     QScrollBar *verBar = mw->verticalScrollBar();
-    verBar->setValue(verBar->maximum()/2);
+    verBar->setValue(verBar->maximum()*((double)tlp.x/m->rows()));
 
 //    MainWindow w;
 //    w.show();

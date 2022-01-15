@@ -39,6 +39,8 @@ public:
 
     bool isTimeToKill();
 
+    void clear();
+
     Cell &operator()(int row, int col);
     Cell operator()(int row, int col) const;
 

@@ -103,12 +103,13 @@ unsigned Statistics::hammingDistance(Organism *org, Organism *an_org) {
  */
 std::vector<Point> Statistics::locationsOfDifference(Organism *org, Organism *an_org) {
     Memory *m = Memory::getInstance();
-    unsigned hamDist = 0;
     std::vector<Point> locsOfDiff;
     for (int i = 0; i < org->getSize().x; i++) {
-        for (int j = 0; j < an_org->getSize().y; j++) {
-            if (m->instAt(org->getTopLeftPos().x+i, org->getTopLeftPos().y+j) != m->instAt(an_org->getTopLeftPos().x+i, an_org->getTopLeftPos().y+j)) {
-                locsOfDiff.push_back(Point(org->getTopLeftPos().x+i, org->getTopLeftPos().x+i));
+        for (int j = 0; j < org->getSize().y; j++) {
+            char orgInst = m->instAt(org->getTopLeftPos().x+i, org->getTopLeftPos().y+j);
+            char an_orgInst = m->instAt(an_org->getTopLeftPos().x+i, an_org->getTopLeftPos().y+j);
+            if (orgInst != an_orgInst) {
+                locsOfDiff.push_back(Point(org->getTopLeftPos().x+i, org->getTopLeftPos().y+j));
             }
         }
     }

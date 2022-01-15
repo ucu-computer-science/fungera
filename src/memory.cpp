@@ -137,3 +137,10 @@ void Memory::setInstAt(Point pnt, char new_inst)
 {
     this->setInstAt(pnt.x, pnt.y, new_inst);
 }
+
+void Memory::clear() {
+    for (int i = 0; i < _rows*_cols; i++) {
+        _cells[i].inst = '.';
+        _cells[i].isFree = true;
+    }
+}
