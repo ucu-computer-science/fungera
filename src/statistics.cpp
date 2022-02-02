@@ -16,52 +16,52 @@ double Statistics::entropy(OrganismQueue *oq) {
      */
 
     size_t numOrgs = oq->getOrganismsNum();
-    std::map<Point, std::map<char, int>> commands_freq; // TODO: rename this shit beacause it is not self explanatory
+    std::map<Point, std::map<char, int>> commands_freq; // TODO: rename this variable beacause it is not self explanatory
     for (int i = 0; i < numOrgs; i++)     // Iterate through all organisms
     {
-        for (int j = 0; j < oq->getOrganisms()[i]->getSize().x; j ++)
-        {
-            for (int k = 0; k < oq->getOrganisms()[i]->getSize().y; k++)
+        Organism *cu_org = oq->getOrganisms()[i];
+        Point cu_org_size = cu_org->getSize();
+        for (int j = 0; j < cu_org_size.x; j++)
+            for (int k = 0; k < cu_org_size.y; k++)
             {
                 /*
-                 * For each point check if it is already inside commands_freq. If not initialize it to empty shit map
+                 * For each point check if it is already inside commands_freq. If not initialize it to empty map
                  * The same for map which contains instruction - occurances
                  */
-                char instr = oq->getOrganisms()[i]->getInstAtOffsetAbs(Point(j,k));
+                Point cu_point = Point(j,k);
+                char instr = cu_org->getInstAtOffsetAbs(Point(j,k));
 
-                if ( commands_freq.find(Point(j,k)) == commands_freq.end() )
+                if ( commands_freq.find(cu_point) == commands_freq.end() )
                 {
-                    std::map<char, int> *shit = new std::map<char, int>;
-                    commands_freq[Point(j,k)] = *shit;
+                    std::map<char, int> *cu_entry = new std::map<char, int>;
+                    (*cu_entry)[instr] = 0;
+                    commands_freq[cu_point] = *cu_entry;
                 }
 
-                if ( commands_freq[Point(j,k)].find(instr) == commands_freq[Point(j,k)].end() )
-                {
-                    commands_freq[Point(j,k)][instr] = 0;
-                }
+                if ( commands_freq[cu_point].find(instr) == commands_freq[cu_point].end() )
+                    commands_freq[cu_point][instr] = 0;
 
-                commands_freq[Point(j,k)][instr]++;
+                commands_freq[cu_point][instr]++;
             }
-        }
     }
 
     std::map<Point, double> per_site_entropies; // but it is not p_ks (p_k * log(p_k) for all )
 
-    for (std::pair<Point, std::map<char, int>> curr_shit : commands_freq)
+    for (std::pair<Point, std::map<char, int>> curr_entry : commands_freq)
     {
-        // TODO: have a look. max_instr_shit contains instruction value (char). It is not used now but may be of use in future
-        Point curr_pnt = curr_shit.first;
-        int max_val_shit = 0;       // n_m from diploma
-        char max_instr_shit = 0;
-        for (std::pair<char, int> curr_shit2 : curr_shit.second)
+        // TODO: have a look. max_instr_i contains instruction value (char). It is not used now but may be of use in future
+        Point curr_pnt = curr_entry.first;
+        int max_val = 0;       // n_m from diploma
+        char max_instr_i = 0;
+        for (std::pair<char, int> curr_subentry : curr_entry.second)
         {
-            if (curr_shit2.second > max_val_shit)
+            if (curr_subentry.second > max_val)
             {
-                max_val_shit = curr_shit2.second;
-                max_instr_shit = curr_shit2.first;
+                max_val = curr_subentry.second;
+                max_instr_i = curr_subentry.first;
             }
         }
-        double per_site_entropy = (double) max_val_shit/numOrgs;
+        double per_site_entropy = (double) max_val/numOrgs;
         per_site_entropies[curr_pnt] = per_site_entropy*std::log(per_site_entropy);
     }
 
