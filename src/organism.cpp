@@ -321,6 +321,12 @@ void Organism::pushToStack()
 void Organism::popFromStack()
 {
     char reg = getInstAtOffset(1);
+    if (!_stack.size())
+    {
+        if (OrganismQueue::getInstance()->getLogLevel() == "debug")
+            std::cerr << "Poping from empty stack" << std::endl;
+        throw "Poping from empty stack";
+    }
     _regs.at(reg) = _stack.back();
     _stack.pop_back();
     emit popedFromStack(reg);
@@ -331,7 +337,7 @@ void Organism::jump()
     // TODO: !!!!!! Jump probably is not working correctly: it misses possible patterns if they are subpatterns of another incorrect pattern!!!!
     std::vector<char> pattern;
     int i = 1;
-    // RANGE FOR JUMP : TODO: Reconsider
+    // RANGE FOR JUMP : TODO: Reconsider & make as configurable variable
     int range_j = 100;
     for (; i < range_j; ++i) {
         char inst = getInstAtOffset(i);
