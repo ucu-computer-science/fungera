@@ -362,6 +362,8 @@ void make_snapshot() {
 void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, unsigned snapCycle)
 {
 
+    std::cout << "0" << std::endl;
+
     for (;;) {
         size_t curr_cycle = OrganismQueue::getInstance()->cycle_no;
         QCoreApplication::processEvents();
@@ -374,6 +376,8 @@ void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, unsigned snapCy
         if (curr_cycle % (10000-1) == 0)
             OrganismQueue::getInstance()->qStat.printAllStatistics();
 
+        //if (curr_cycle > 90000 && curr_cycle % 10 == 0)
+        std::cout << curr_cycle << std::endl;
 
         if (curr_cycle % 3 == 0)
             Memory::getInstance()->irradiate();

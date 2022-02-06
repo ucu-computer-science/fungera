@@ -18,6 +18,26 @@ class Statistics {
         void printAllStatistics();
 
         std::map<int, std::pair<int, size_t>> evo_tree;     // child_id : (parent_id, split_cycle)
+
+
+        template<class D>
+        static inline long long to_us(const D& d);
+
+        static inline std::chrono::high_resolution_clock::time_point get_current_time_fenced();
+
 };
+
+template<class D>
+inline long long Statistics::to_us(const D& d)
+{
+    return std::chrono::duration_cast<std::chrono::microseconds>(d).count();
+}
+inline std::chrono::high_resolution_clock::time_point Statistics::get_current_time_fenced()
+{
+    std::atomic_thread_fence(std::memory_order_seq_cst);
+    auto res_time = std::chrono::high_resolution_clock::now();
+    std::atomic_thread_fence(std::memory_order_seq_cst);
+    return res_time;
+}
 
 #endif // STATISTICS_H

@@ -1,6 +1,8 @@
 #include "organismqueue.h"
 
 #include <algorithm>
+#include <iostream>
+#include "statistics.h"
 
 OrganismQueue *OrganismQueue::getInstance()
 {
@@ -20,7 +22,12 @@ void OrganismQueue::addInterim(Organism *organism)
 void OrganismQueue::cycleAll()
 {
     for (Organism *o : _organisms)
+    {
+        auto start_time = Statistics::get_current_time_fenced();
         o->cycle();
+        auto finish_time = Statistics::get_current_time_fenced();
+        std::cout << o->id() << ": " << Statistics::to_us(finish_time - start_time) << " ms" << std::endl;
+    }
 
     while (!_organismsInterim.empty())
     {
