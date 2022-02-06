@@ -34,10 +34,9 @@ StatusPanel::StatusPanel(Organism *organism, QWidget *parent) : QWidget(parent),
     setLayout(gridLayout);
 }
 
-void StatusPanel::cycle()
+void StatusPanel::cycle(int curr_cycle)
 {
-    _cycleNoLbl->setNum(_cycleNo);
-    ++_cycleNo;
+    _cycleNoLbl->setNum(curr_cycle);
     updateIP();
 }
 

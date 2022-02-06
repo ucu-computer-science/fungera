@@ -12,7 +12,7 @@ class StatusPanel : public QWidget
 public:
     explicit StatusPanel(Organism *organism, QWidget *parent = nullptr);
 
-    void cycle();
+    void cycle(int curr_cycle);
 
 public slots:
 //    void onPurgeHappened(int purged);
@@ -28,8 +28,6 @@ public slots:
 
 private:
     void updateIP();
-
-    int _cycleNo = 0;
 
     Organism *_organism = nullptr;
 

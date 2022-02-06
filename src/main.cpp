@@ -23,7 +23,7 @@
 bool isRunning = true;
 
 void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, unsigned snapCycle);
-void cycle(OrganismQueue *, StatusPanel *);
+void cycle(OrganismQueue *, StatusPanel *, size_t);
 void restoreMemoryMap();
 
 using namespace boost::program_options;
@@ -308,7 +308,7 @@ int main(int argc, char *argv[])
     startAndStopBtn->connect(startAndStopBtn, &QPushButton::clicked, [](){ isRunning = !isRunning; });
 
     QPushButton *cycleBtn = new QPushButton("Cycle");
-    cycleBtn->connect(cycleBtn, &QPushButton::clicked, [=](){ cycle(oq, sp); });
+    cycleBtn->connect(cycleBtn, &QPushButton::clicked, [=](){ cycle(oq, sp, oq->cycle_no); });
 
     QPushButton *nextBtn = new QPushButton("Next");
     nextBtn->connect(nextBtn, &QPushButton::clicked, oq, &OrganismQueue::selectNextOrg);
@@ -369,9 +369,9 @@ void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, unsigned snapCy
         if (!isRunning)
             continue;
 
-        cycle(organismQueue, statusPanel);
+        cycle(organismQueue, statusPanel, curr_cycle);
 
-        if (curr_cycle % 10000 == 0)
+        if (curr_cycle % (10000-1) == 0)
             OrganismQueue::getInstance()->qStat.printAllStatistics();
 
 
@@ -389,10 +389,10 @@ void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, unsigned snapCy
 
 // Have no fucking idea how does this work (doesn't interfere with already
 // running run()
-void cycle(OrganismQueue *organismQueue, StatusPanel *statusPanel)
+void cycle(OrganismQueue *organismQueue, StatusPanel *statusPanel, size_t curr_cycle)
 {
     organismQueue->cycleAll();
-    statusPanel->cycle();
+    statusPanel->cycle(curr_cycle);
 }
 
 void restoreMemoryMap() {

@@ -262,8 +262,9 @@ void Organism::allocChild()
     int maxI = std::max(_memory->rows(), _memory->cols());
     for (int i = 3; i < maxI; ++i) {
         _childTopLeftPos = getIpAtOffset(i);
-        if (_childTopLeftPos.x > _memory->rows()
-                || _childTopLeftPos.y > _memory->cols()) {
+        if (_childTopLeftPos.x >= _memory->rows()
+                || _childTopLeftPos.y >= _memory->cols()) {
+            break;
         }
         if (_memory->isAreaFree(_childTopLeftPos, _childSize)) {
             char reg2 = getInstAtOffset(2);

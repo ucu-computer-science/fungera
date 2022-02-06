@@ -88,6 +88,7 @@ private:
     {
         ar & _organisms;
         ar & _activeOrgIdx;
+        ar & cycle_no;
     }
 
 };
