@@ -109,12 +109,12 @@ int main(int argc, char *argv[])
 
                 if (orgs_files.size() < 2)
                 {
-                    std::cerr << "Specified not enough files to perform hamming distance (2 required)";
+                    std::cerr << "Specified not enough files to perform hamming distance (2 required)" << std::endl;
                     exit(1);
                 }
                 if (orgs_files.size() > 2)
                 {
-                    std::cerr << "Specified too many files to perform hamming distance (2 required). Other are ignored";
+                    std::cerr << "Specified too many files to perform hamming distance (2 required). Other are ignored" << std::endl;
                 }
 
                 std::cout << "Restoring memory map before restoring organisms and calculating hamming distance..." << std::endl;

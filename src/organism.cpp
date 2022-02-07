@@ -259,7 +259,7 @@ void Organism::allocChild()
     if (_childSize.x == 0 && _childSize.y == 0)
         return;
 
-    int maxI = std::max(_memory->rows(), _memory->cols());
+    int maxI = std::max(_memory->rows()-_childSize.x, _memory->cols()-_childSize.y);
     for (int i = 3; i < maxI; ++i) {
         _childTopLeftPos = getIpAtOffset(i);
         if (_childTopLeftPos.x >= _memory->rows()

@@ -82,6 +82,14 @@ bool Memory::isAreaFree(Point topLeftPos, Point size)
 {
     int lastRow = topLeftPos.x + size.x;
     int lastCol = topLeftPos.y + size.y;
+
+    if (lastRow >= rows() || lastCol >= cols())
+    {
+        if (OrganismQueue::getInstance()->getLogLevel() == "debug")
+            std::cerr << "Memory area out of memory map bounds" << std::endl;
+        throw "Memory area out of memory map bounds";
+    }
+
     for (int row = topLeftPos.x; row < lastRow; ++row)
         for (int col = topLeftPos.y; col < lastCol; ++col)
             if (!(*this)(row, col).isFree)
