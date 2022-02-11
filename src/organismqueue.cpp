@@ -23,10 +23,10 @@ void OrganismQueue::cycleAll()
 {
     for (Organism *o : _organisms)
     {
-        auto start_time = Statistics::get_current_time_fenced();
+        //auto start_time = Statistics::get_current_time_fenced();
         o->cycle();
-        auto finish_time = Statistics::get_current_time_fenced();
-        std::cout << o->id() << ": " << Statistics::to_us(finish_time - start_time) << " ms" << std::endl;
+        //auto finish_time = Statistics::get_current_time_fenced();
+        //std::cout << o->id() << ": " << Statistics::to_us(finish_time - start_time) << " ms" << std::endl;
     }
 
     while (!_organismsInterim.empty())
@@ -57,7 +57,8 @@ void OrganismQueue::selectPrevOrg()
 
 void OrganismQueue::killOrganisms()
 {
-    std::sort(_organisms.begin(), _organisms.end(), [](const Organism* lhs, const Organism* rhs){ return *lhs > *rhs; });
+    std::cout << " ******** KILLING ******* " << std::endl;
+    std::sort(_organisms.begin(), _organisms.end(), [](const Organism* lhs, const Organism* rhs){ return *lhs < *rhs; });
     constexpr double killOrganismsRatio = 0.5;
     int ratio = static_cast<int>(_organisms.size() * killOrganismsRatio);
     for (; ratio > 0; --ratio) {

@@ -133,11 +133,15 @@ void Statistics::printAllStatistics() {
         Point parent_size(-1, -1);
         if (OrganismQueue::getInstance()->getOrganism(cu_rel.second.first) != NULL)
         {
+            if (OrganismQueue::getInstance()->getOrganism(cu_rel.second.first) == NULL)
+                continue;
             parent_size = OrganismQueue::getInstance()->getOrganism(cu_rel.second.first)->getSize();
         }
         Point child_size(-1, -1);
         if (OrganismQueue::getInstance()->getOrganism(cu_rel.second.first) != NULL)
         {
+            if (OrganismQueue::getInstance()->getOrganism(cu_rel.first) == NULL)
+                continue;
             child_size = OrganismQueue::getInstance()->getOrganism(cu_rel.first)->getSize();
         }
         std::cout << "  " << cu_rel.second.first << "(" << parent_size.x << ", " << parent_size.y << ")"

@@ -30,10 +30,10 @@ Organism::Organism()
 
 Organism::~Organism()
 {
-    Memory &mem = *Memory::getInstance();
-    mem.freeArea(_topLeftPos, _size);
+    //Memory &mem = *Memory::getInstance();
+    Memory::getInstance()->freeArea(_topLeftPos, _size);
     if (_childSize != Point(0, 0)) // Why does { 0, 0 } cannot be used?
-        mem.freeArea(_childTopLeftPos, _childSize);
+        Memory::getInstance()->freeArea(_childTopLeftPos, _childSize);
 }
 
 void Organism::self_serialize() {
@@ -67,13 +67,15 @@ void Organism::cycle()
             mem(_ip.x, _ip.y).bgColor = Qt::red;
             emit cellChanged(_ip.x, _ip.y);
         }
+        OrganismQueue::getInstance()->successes++;
     } catch (...) { // Catch any type of error
         ++_errors;
+        OrganismQueue::getInstance()->fails++;
     }
 
     // TODO: Extract snapshoting function for organism to separate method
     size_t curr_cycle = OrganismQueue::getInstance()->cycle_no;
-    if (OrganismQueue::getInstance()->orgSnap && curr_cycle - this->last_snap_cycle > OrganismQueue::getInstance()->orgSnap)
+    if (OrganismQueue::getInstance()->orgSnap && curr_cycle == OrganismQueue::getInstance()->orgSnap)
     {
         this->self_serialize();
     }
@@ -255,6 +257,9 @@ void Organism::allocChild()
 {
     char reg1 = getInstAtOffset(1);
     _childSize = _regs.at(reg1);
+
+    _childSize.x = std::min(_memory->rows()-1, _childSize.x);
+    _childSize.y = std::min(_memory->cols()-1, _childSize.y);
     // ?
     if (_childSize.x == 0 && _childSize.y == 0)
         return;
@@ -666,4 +671,8 @@ int Organism::_nextID = 0;
 bool operator>(const Organism &lhs, const Organism &rhs)
 {
     return lhs._errors > rhs._errors;
+}
+bool operator<(const Organism &lhs, const Organism &rhs)
+{
+    return lhs._errors < rhs._errors;
 }

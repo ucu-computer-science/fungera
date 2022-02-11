@@ -30,7 +30,7 @@ using namespace boost::program_options;
 int main(int argc, char *argv[])
 { 
 
-    srand(1);
+    srand(7);
 
     QApplication a(argc, argv);
     QWidget wgt;
@@ -208,6 +208,7 @@ int main(int argc, char *argv[])
         restoreMemoryMap();
         std::cout << "  Done" << std::endl;
 
+        // TODO: Is static really necessary?
         static Organism interim_pseudo_org;
 
         std::ifstream org_stream(extractFn);
@@ -235,6 +236,9 @@ int main(int argc, char *argv[])
 
         sz = m->loadGenome(extracted_fn, tlp);
         static Organism org(tlp, sz);
+
+        org.setIP(interim_pseudo_org.getIP());
+        org.setDelta(interim_pseudo_org.getDelta());
 
         try {
             std::ofstream o_parent("organisms/" + std::to_string(org.id()) + "_" + std::to_string(0));
@@ -336,8 +340,8 @@ int main(int argc, char *argv[])
     QScrollBar *verBar = mw->verticalScrollBar();
     verBar->setValue(verBar->maximum()*((double)tlp.x/m->rows()));
 
-//    MainWindow w;
-//    w.show();
+    // MainWindow w;
+    // w.show();
     return a.exec();
 }
 
@@ -371,13 +375,10 @@ void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, unsigned snapCy
         if (!isRunning)
             continue;
 
-        cycle(organismQueue, statusPanel, curr_cycle);
-
-        if (curr_cycle % (10000-1) == 0)
+        if (curr_cycle % 10000 == 0)
             OrganismQueue::getInstance()->qStat.printAllStatistics();
 
-        //if (curr_cycle > 90000 && curr_cycle % 10 == 0)
-        std::cout << curr_cycle << std::endl;
+        cycle(organismQueue, statusPanel, curr_cycle);
 
         if (curr_cycle % 3 == 0)
             Memory::getInstance()->irradiate();
@@ -393,9 +394,16 @@ void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, unsigned snapCy
 
 // Have no fucking idea how does this work (doesn't interfere with already
 // running run()
-void cycle(OrganismQueue *organismQueue, StatusPanel *statusPanel, size_t curr_cycle)
+void cycle(OrganismQueue *oq, StatusPanel *statusPanel, size_t curr_cycle)
 {
-    organismQueue->cycleAll();
+    if (curr_cycle > 80000 && curr_cycle % 100 == 0)
+    {
+        std::cout << "  cycle: " << curr_cycle << " - " << oq->getOrganismsNum() << std::endl;
+        std::cout << oq->successes << " vs. " << oq->fails << std::endl;
+        oq->successes = 0;
+        oq->fails = 0;
+    }
+    oq->cycleAll();
     statusPanel->cycle(curr_cycle);
 }
 

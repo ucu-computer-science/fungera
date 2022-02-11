@@ -108,7 +108,7 @@ Cell Memory::operator()(int row, int col) const { return _cells[row * _cols + co
 using std::vector;
 void Memory::irradiate()
 {
-    static std::mt19937 gen(1 /* set seed here */);
+    static std::mt19937 gen(13 /* set seed here */);
     std::uniform_int_distribution<> distr(0, _rows-1);
 
     int randRow = distr(gen);
@@ -124,14 +124,15 @@ bool Memory::isTimeToKill()
 {
     double ratio = (double) std::count_if(_cells, _cells+_rows*_cols, [](const Cell &cell){ return !cell.isFree; })
             / std::count_if(_cells, _cells+_rows*_cols, [](const Cell &cell){ return cell.isFree; });
-    constexpr auto memoryFullRatio = 0.9;
+    constexpr auto memoryFullRatio = 0.01;
+    std::cout << "RATIO: " << ratio << std::endl;
     return ratio > memoryFullRatio;
 }
 
 void Memory::setAreaFreedom(Point topLeftPos, Point size, bool isFree)
 {
-    int lastRow = topLeftPos.x + size.x;
-    int lastCol = topLeftPos.y + size.y;
+    int lastRow = std::min(topLeftPos.x + size.x, rows());
+    int lastCol = std::min(topLeftPos.y + size.y, cols());
     for (int row = topLeftPos.x; row < lastRow; ++row)
         for (int col = topLeftPos.y; col < lastCol; ++col)
             (*this)(row, col).isFree = isFree;

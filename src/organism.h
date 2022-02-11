@@ -49,6 +49,12 @@ public:
     size_t last_snap_cycle = 0;
     void self_serialize();
 
+    Point getIP() { return _ip; }
+    Point getDelta() { return _delta; }
+
+    void setIP(Point newIP) { _ip = newIP; }
+    void setDelta(Point newDelta) { _delta = newDelta; }
+
 signals:
     void cellChanged(int, int);
     void colorsChanged(Point, Point);
@@ -62,6 +68,7 @@ signals:
     void popedFromStack(char);
 
     friend bool operator>(const Organism &lhs, const Organism &rhs);
+    friend bool operator<(const Organism &lhs, const Organism &rhs);
 
 private:
     void nop();

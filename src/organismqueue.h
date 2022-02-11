@@ -65,6 +65,9 @@ public:
     std::string logLevel = "release";
     unsigned orgSnap = 0;
 
+    size_t successes = 0;
+    size_t fails = 0;
+
 public slots:
     void selectNextOrg();
     void selectPrevOrg();
