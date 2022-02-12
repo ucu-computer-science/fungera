@@ -6,12 +6,16 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(MAIN_EXECUTABLE_NAME qtfungera)
+
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-
-#set(ENABLE_PVS_STUDIO ON)
+set(ENABLE_PVS_STUDIO OFF)
 
 #  Only one of Memory (MSAN), Address (ASAN), or Thread (TSan)
 #  sanitizers is applicable at the time -- the first defined.
@@ -26,11 +30,10 @@ set(ENABLE_ASAN OFF)
 set(ENABLE_TSan OFF)
 #! MemorySanitizer detects uninitialized memory reads 
 #  Info: https://github.com/google/sanitizers/wiki/MemorySanitizer
-set(ENABLE_MSAN ON)
+set(ENABLE_MSAN OFF)
 
-
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# Warnings as errors should be imported here -- do not move this line
+include(cmake/CompilerWarnings.cmake)
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
@@ -64,46 +67,44 @@ set(PROJECT_SOURCES
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(qtfungera
+    qt_add_executable(${MAIN_EXECUTABLE_NAME}
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
     )
 # Define target properties for Android with Qt 6 as:
-#    set_property(TARGET qtfungera APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+#    set_property(TARGET ${MAIN_EXECUTABLE_NAME} APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
 #                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
 # For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
 else()
     if(ANDROID)
-        add_library(qtfungera SHARED
+        add_library(${MAIN_EXECUTABLE_NAME} SHARED
             ${PROJECT_SOURCES}
         )
 # Define properties for Android with Qt 5 after find_package() calls as:
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
-        add_executable(qtfungera
+        add_executable(${MAIN_EXECUTABLE_NAME}
             ${PROJECT_SOURCES}
         )
     endif()
 endif()
 
-target_link_libraries(qtfungera PRIVATE Qt${QT_VERSION_MAJOR}::Widgets ${Boost_LIBRARIES})
+target_link_libraries(${MAIN_EXECUTABLE_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets ${Boost_LIBRARIES})
 
-# target_link_libraries(qtfungera LINK_PUBLIC ${Boost_LIBRARIES})
+# target_link_libraries(${MAIN_EXECUTABLE_NAME} LINK_PUBLIC ${Boost_LIBRARIES})
 
-set_target_properties(qtfungera PROPERTIES
-    MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
+set_target_properties(${MAIN_EXECUTABLE_NAME} PROPERTIES
+    MACOSX_BUNDLE_GUI_IDENTIFIER ${MAIN_EXECUTABLE_NAME}_ID
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
 )
 
-target_compile_features(qtfungera PRIVATE cxx_std_17)
-
 if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(qtfungera)
+    qt_finalize_executable(${MAIN_EXECUTABLE_NAME})
 endif()
 
 # Define ALL_TARGETS variable to use in PVS and Sanitizers
-set(ALL_TARGETS qtfungera)
+set(ALL_TARGETS ${MAIN_EXECUTABLE_NAME})
 
 # Include CMake setup
 include(cmake/main-config.cmake)
