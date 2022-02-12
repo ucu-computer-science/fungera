@@ -10,6 +10,25 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
+
+#set(ENABLE_PVS_STUDIO ON)
+
+#  Only one of Memory (MSAN), Address (ASAN), or Thread (TSan)
+#  sanitizers is applicable at the time -- the first defined.
+
+#! UndefinedBehaviorSanitizer (UBSan)
+#  Info: https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
+set(ENABLE_UBSan OFF)
+#! AddressSanitizer -- detects use after free or after scope exit, memory overflows and leaks.  
+#  Info: https://github.com/google/sanitizers/wiki/AddressSanitizer
+set(ENABLE_ASAN OFF)
+#! ThreadSanitizer -- detects data races.
+set(ENABLE_TSan OFF)
+#! MemorySanitizer detects uninitialized memory reads 
+#  Info: https://github.com/google/sanitizers/wiki/MemorySanitizer
+set(ENABLE_MSAN ON)
+
+
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -82,3 +101,10 @@ target_compile_features(qtfungera PRIVATE cxx_std_17)
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(qtfungera)
 endif()
+
+# Define ALL_TARGETS variable to use in PVS and Sanitizers
+set(ALL_TARGETS qtfungera)
+
+# Include CMake setup
+include(cmake/main-config.cmake)
+

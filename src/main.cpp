@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 //#include "mainwindow.h"
 #include "memory.h"
 #include "memoryview.h"
@@ -121,7 +123,7 @@ int main(int argc, char *argv[])
                 restoreMemoryMap();
                 std::cout << "  Done" << std::endl;
 
-                static Organism org, an_org;
+                Organism org, an_org;
 
                 std::ifstream org_stream(orgs_files[0]);
                 boost::archive::text_iarchive ia_org(org_stream);
@@ -186,22 +188,22 @@ int main(int argc, char *argv[])
 
         m->clear();
         sz = m->loadGenome(extracted_fn, tlp);
-        static Organism org(tlp, sz);
+        Organism *org = new Organism{tlp, sz};
 
         try {
-            std::ofstream o_parent("organisms/" + std::to_string(org.id()) + "_" + std::to_string(0));
+            std::ofstream o_parent("organisms/" + std::to_string(org->id()) + "_" + std::to_string(0));
             {
                 boost::archive::text_oarchive oa_parent(o_parent);
-                oa_parent << org;
+                oa_parent << *org;
             }
         } catch (std::exception &e) {
             std::cerr << e.what() << '\n';
         }
 
-        org.setActiveColors();
-        OrganismQueue::getInstance()->add(&org);
+        org->setActiveColors();
+        OrganismQueue::getInstance()->add(org);
 
-        sp = new StatusPanel(&org);
+        sp = new StatusPanel(org);
     }
     else if (isExtractInContext) {
         std::cout << "Restoring memory map before extracting in context..." << std::endl;
@@ -235,25 +237,25 @@ int main(int argc, char *argv[])
         std::cout << "Organism tlp: " << tlp.x << ", " << tlp.y << std::endl;
 
         sz = m->loadGenome(extracted_fn, tlp);
-        static Organism org(tlp, sz);
+        Organism *org = new Organism{tlp, sz};
 
-        org.setIP(interim_pseudo_org.getIP());
-        org.setDelta(interim_pseudo_org.getDelta());
+        org->setIP(interim_pseudo_org.getIP());
+        org->setDelta(interim_pseudo_org.getDelta());
 
         try {
-            std::ofstream o_parent("organisms/" + std::to_string(org.id()) + "_" + std::to_string(0));
+            std::ofstream o_parent("organisms/" + std::to_string(org->id()) + "_" + std::to_string(0));
             {
                 boost::archive::text_oarchive oa_parent(o_parent);
-                oa_parent << org;
+                oa_parent << *org;
             }
         } catch (std::exception &e) {
             std::cerr << e.what() << '\n';
         }
 
-        org.setActiveColors();
-        OrganismQueue::getInstance()->add(&org);
+        org->setActiveColors();
+        OrganismQueue::getInstance()->add(org);
 
-        sp = new StatusPanel(&org);
+        sp = new StatusPanel(org);
     }
 
     else if (isRestore) {
@@ -282,22 +284,22 @@ int main(int argc, char *argv[])
 
         sz = m->loadGenome(fn, tlp);
 
-        static Organism org(tlp, sz);
+        Organism* org = new Organism{tlp, sz};
 
         try {
-            std::ofstream o_parent("organisms/" + std::to_string(org.id()) + "_" + std::to_string(0));
+            std::ofstream o_parent("organisms/" + std::to_string(org->id()) + "_" + std::to_string(0));
             {
                 boost::archive::text_oarchive oa_parent(o_parent);
-                oa_parent << org;
+                oa_parent << *org;
             }
         } catch (std::exception &e) {
             std::cerr << e.what() << '\n';
         }
 
-        org.setActiveColors();
-        OrganismQueue::getInstance()->add(&org);
+        org->setActiveColors();
+        OrganismQueue::getInstance()->add(org);
 
-        sp = new StatusPanel(&org);
+        sp = new StatusPanel(org);
     }
 
     OrganismQueue::getInstance()->setDrawIP(drawIP);
