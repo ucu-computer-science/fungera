@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "src/statistics.h"
 #include "src/organism.h"
 #include "src/point.h"
@@ -17,7 +19,7 @@ double Statistics::entropy(OrganismQueue *oq) {
 
     size_t numOrgs = oq->getOrganismsNum();
     std::map<Point, std::map<char, int>> commands_freq; // TODO: rename this variable beacause it is not self explanatory
-    for (int i = 0; i < numOrgs; i++)     // Iterate through all organisms
+    for (size_t i = 0; i < numOrgs; i++)     // Iterate through all organisms
     {
         Organism *cu_org = oq->getOrganisms()[i];
         Point cu_org_size = cu_org->getSize();
