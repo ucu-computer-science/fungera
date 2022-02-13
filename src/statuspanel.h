@@ -21,7 +21,7 @@ public slots:
     void updateOrganism(Organism *organism);
 
 //    void updateErrors();
-    void updateDelta();
+    void updateDelta(Point delta);
     void updateReg(char reg);
     void onPushedToStack();
     void onPoppedFromStack(char reg);

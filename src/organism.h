@@ -63,7 +63,7 @@ signals:
 
     // IP changes every cycle anyway
     // void ipChanged(Point);
-    void deltaChanged();
+    void deltaChanged(Point);
     void regChanged(char);
     void errorsChanged();
     void pushedToStack();

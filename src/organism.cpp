@@ -100,25 +100,25 @@ void Organism::nop() {}
 void Organism::setDeltaUp()
 {
     _delta = { -1, 0 };
-    emit deltaChanged();
+    emit deltaChanged(_delta);
 }
 
 void Organism::setDeltaDown()
 {
     _delta = { 1, 0 };
-    emit deltaChanged();
+    emit deltaChanged(_delta);
 }
 
 void Organism::setDeltaRight()
 {
     _delta = { 0, 1 };
-    emit deltaChanged();
+    emit deltaChanged(_delta);
 }
 
 void Organism::setDeltaLeft()
 {
     _delta = { 0, -1 };
-    emit deltaChanged();
+    emit deltaChanged(_delta);
 }
 
 void Organism::findPattern()

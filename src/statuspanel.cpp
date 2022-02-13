@@ -57,14 +57,12 @@ void StatusPanel::updateOrganism(Organism *organism)
     connect(_organism, &Organism::popedFromStack, this, &StatusPanel::onPoppedFromStack);
 }
 
-using std::stringstream;
-void StatusPanel::updateDelta()
+void StatusPanel::updateDelta(Point delta)
 {
     QString qstr = _organism->_delta.qstr();
-    _delta->setText(qstr);
+    _delta->setText( delta.qstr() );
 }
 
-using std::unordered_map;
 void StatusPanel::updateReg(char reg)
 {
     QLabel *regLbl = _regs.at(reg);
