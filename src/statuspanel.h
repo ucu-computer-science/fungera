@@ -22,9 +22,9 @@ public slots:
 
 //    void updateErrors();
     void updateDelta(Point delta);
-    void updateReg(char reg);
-    void onPushedToStack();
-    void onPoppedFromStack(char reg);
+    void updateReg(char reg, Point val);
+    void onPushedToStack(Point val);
+    void onPoppedFromStack(char reg, Point val);
 
 private:
     void updateIP();

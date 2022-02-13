@@ -64,10 +64,10 @@ signals:
     // IP changes every cycle anyway
     // void ipChanged(Point);
     void deltaChanged(Point);
-    void regChanged(char);
-    void errorsChanged();
-    void pushedToStack();
-    void popedFromStack(char);
+    void regChanged(char, Point);
+    void errorsChanged(size_t);
+    void pushedToStack(Point);
+    void popedFromStack(char, Point);
 
 private:
     void nop();
@@ -131,8 +131,6 @@ private:
 
     Point _childTopLeftPos;
     Point _childSize;
-
-    friend class StatusPanel;
 
     friend class boost::serialization::access;
 

@@ -155,7 +155,7 @@ void Organism::findPattern()
         if (ctr == pattern.size()) {
             char reg = getInstAtOffset(1);
             _regs.at(reg) = getIpAtOffset(i);
-            emit regChanged(reg);
+            emit regChanged(reg, _regs.at(reg));
             break;
         }
     }
@@ -181,14 +181,14 @@ void Organism::setRegToZero()
 {
     char reg = getInstAtOffset(1);
     _regs.at(reg) = { 0, 0 };
-    emit regChanged(reg);
+    emit regChanged(reg, _regs.at(reg));
 }
 
 void Organism::setRegToOne()
 {
     char reg = getInstAtOffset(1);
     _regs.at(reg) = { 1, 1 };
-    emit regChanged(reg);
+    emit regChanged(reg, _regs.at(reg));
 }
 
 void Organism::decReg()
@@ -197,14 +197,14 @@ void Organism::decReg()
     if (inst == 'x') {
         char reg = getInstAtOffset(2);
         --_regs.at(reg).x;
-        emit regChanged(reg);
+        emit regChanged(reg, _regs.at(reg));
     } else if (inst == 'y') {
         char reg = getInstAtOffset(2);
         --_regs.at(reg).y;
-        emit regChanged(reg);
+        emit regChanged(reg, _regs.at(reg));
     } else {
         --_regs.at(inst);
-        emit regChanged(inst);
+        emit regChanged(inst, _regs.at(inst));
     }
 }
 
@@ -214,14 +214,14 @@ void Organism::incReg()
     if (inst == 'x') {
         char reg = getInstAtOffset(2);
         ++_regs.at(reg).x;
-        emit regChanged(reg);
+        emit regChanged(reg, _regs.at(reg));
     } else if (inst == 'y') {
         char reg = getInstAtOffset(2);
         ++_regs.at(reg).y;
-        emit regChanged(reg);
+        emit regChanged(reg, _regs.at(reg));
     } else {
         ++_regs.at(inst);
-        emit regChanged(inst);
+        emit regChanged(inst, _regs.at(inst));
     }
 }
 
@@ -231,7 +231,7 @@ void Organism::subRegs()
     char reg2 = getInstAtOffset(2);
     char reg3 = getInstAtOffset(3);
     _regs.at(reg3) = _regs.at(reg1) - _regs.at(reg2);
-    emit regChanged(reg3);
+    emit regChanged(reg3, _regs.at(reg3));
 }
 
 void Organism::loadInst()
@@ -241,7 +241,7 @@ void Organism::loadInst()
     char inst = _memory->instAt(reg1Conts.x, reg1Conts.y);
     char reg2 = getInstAtOffset(2);
     _regs.at(reg2) = _opcodes.at(inst);
-    emit regChanged(reg2);
+    emit regChanged(reg2, _regs.at(reg2));
 }
 
 void Organism::writeInst()
@@ -278,7 +278,7 @@ void Organism::allocChild()
         if (_memory->isAreaFree(_childTopLeftPos, _childSize)) {
             char reg2 = getInstAtOffset(2);
             _regs.at(reg2) = _childTopLeftPos;
-            emit regChanged(reg2);
+            emit regChanged(reg2, _regs.at(reg2));
             _memory->allocArea(_childTopLeftPos, _childSize);
             return;
         }
@@ -325,7 +325,7 @@ void Organism::pushToStack()
         throw std::range_error{"Pushing to full stack"};
     }
     _stack.push_back(regConts);
-    emit pushedToStack();
+    emit pushedToStack(_stack.back());
 }
 
 void Organism::popFromStack()
@@ -339,7 +339,7 @@ void Organism::popFromStack()
     }
     _regs.at(reg) = _stack.back();
     _stack.pop_back();
-    emit popedFromStack(reg);
+    emit popedFromStack(reg, _regs.at(reg));
 }
 
 void Organism::jump()
@@ -529,7 +529,7 @@ void Organism::random() {
     int rand_x = rand() % 2;
     int rand_y = rand() % 2;
     _regs.at(reg) = { rand_x, rand_y };
-    emit regChanged(reg);
+    emit regChanged(reg, _regs.at(reg));
 }
 
 void Organism::randomDelta() {

@@ -59,35 +59,30 @@ void StatusPanel::updateOrganism(Organism *organism)
 
 void StatusPanel::updateDelta(Point delta)
 {
-    QString qstr = _organism->_delta.qstr();
     _delta->setText( delta.qstr() );
 }
 
-void StatusPanel::updateReg(char reg)
+void StatusPanel::updateReg(char reg, Point val)
 {
     QLabel *regLbl = _regs.at(reg);
-    Point regConts = _organism->_regs.at(reg);
-    QString qstr = regConts.qstr();
-    regLbl->setText(qstr);
+    regLbl->setText( val.qstr() );
 }
 
-void StatusPanel::onPushedToStack()
+void StatusPanel::onPushedToStack(Point val)
 {
-    QString qstr = _organism->_stack.back().qstr();
-    _stackLbls[_nextAfterTopIdx]->setText(qstr);
+    _stackLbls[_nextAfterTopIdx]->setText(val.qstr());
     ++_nextAfterTopIdx;
 }
 
-void StatusPanel::onPoppedFromStack(char reg)
+void StatusPanel::onPoppedFromStack(char reg, Point val)
 {
     --_nextAfterTopIdx;
     _stackLbls[_nextAfterTopIdx]->clear();
 
-    updateReg(reg);
+    updateReg(reg, val);
 }
 
 void StatusPanel::updateIP()
 {
-    QString qstr = _organism->_ip.qstr();
-    _ip->setText(qstr);
+    _ip->setText( _organism->getIP().qstr() );
 }
