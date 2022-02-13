@@ -265,8 +265,12 @@ void Organism::allocChild()
     _childSize.x = std::min<int>(_memory->rows()-1, _childSize.x);
     _childSize.y = std::min<int>(_memory->cols()-1, _childSize.y);
     // ?
-    if (_childSize.x == 0 && _childSize.y == 0)
-        return;
+    if (_childSize.x <= 0 && _childSize.y <= 0)
+    {
+        if (OrganismQueue::getInstance()->getLogLevel() == "debug")
+            std::cerr << "Allocating organism of size <= 0" << std::endl;
+        throw std::range_error{"Allocating organism of size <= 0"};
+    }
 
     int maxI = std::max(_memory->rows()-_childSize.x, _memory->cols()-_childSize.y);
     for (int i = 3; i < maxI; ++i) {
@@ -293,11 +297,17 @@ void Organism::separateChild()
             std::cerr << "Part of child is out of memory map, child is not separated" << std::endl;
         throw std::range_error{"Child out of memory map"};
     }
-    if (_childSize.x == 0 || _childSize.y == 0)
+    if (_childSize.x <= 0 || _childSize.y <= 0)
     {
         if (OrganismQueue::getInstance()->getLogLevel() == "debug")
             std::cerr << "Trying to allocate child with one of the size dimentions = 0" << std::endl;
         throw std::range_error{"Wrong child size on separate"};
+    }
+    if (_childTopLeftPos.x < 0 || _childTopLeftPos.y < 0)
+    {
+        if (OrganismQueue::getInstance()->getLogLevel() == "debug")
+            std::cerr << "Trying to allocate child with tlp < 0" << std::endl;
+        throw std::range_error{"Trying to allocate child with tlp < 0"};
     }
     Organism *org = new Organism(_childTopLeftPos, _childSize);
     _organismQueue->addInterim(org);
