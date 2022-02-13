@@ -73,7 +73,7 @@ void Organism::cycle()
         OrganismQueue::getInstance()->successes++;
     } catch (...) { // Catch any type of error 
                     // TODO: catch (...) is too general here
-        ++_errors;
+        ++m_errors;
         OrganismQueue::getInstance()->fails++;
     }
 
@@ -671,12 +671,3 @@ const unordered_map<char, Point> Organism::_opcodes{
 };
 
 int Organism::_nextID = 0;
-
-bool operator>(const Organism &lhs, const Organism &rhs)
-{
-    return lhs._errors > rhs._errors;
-}
-bool operator<(const Organism &lhs, const Organism &rhs)
-{
-    return lhs._errors < rhs._errors;
-}

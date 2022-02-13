@@ -60,7 +60,8 @@ void OrganismQueue::selectPrevOrg()
 void OrganismQueue::killOrganisms()
 {
     std::cout << " ******** KILLING ******* " << std::endl;
-    std::sort(_organisms.begin(), _organisms.end(), [](const Organism* lhs, const Organism* rhs){ return *lhs < *rhs; });
+    std::sort(_organisms.begin(), _organisms.end(),
+              [](const Organism* lhs, const Organism* rhs){ return lhs->getErrors() < rhs->getErrors(); });
     constexpr double killOrganismsRatio = 0.5;
     auto ratio = static_cast<size_t>(_organisms.size() * killOrganismsRatio); //-V113
     for (; ratio > 0; --ratio) {

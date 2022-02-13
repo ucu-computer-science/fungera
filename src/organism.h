@@ -55,6 +55,8 @@ public:
     void setIP(Point newIP) { _ip = newIP; }
     void setDelta(Point newDelta) { _delta = newDelta; }
 
+    size_t getErrors() const { return m_errors; }
+
 signals:
     void cellChanged(int, int);
     void colorsChanged(Point, Point);
@@ -66,9 +68,6 @@ signals:
     void errorsChanged();
     void pushedToStack();
     void popedFromStack(char);
-
-    friend bool operator>(const Organism &lhs, const Organism &rhs);
-    friend bool operator<(const Organism &lhs, const Organism &rhs);
 
 private:
     void nop();
@@ -113,7 +112,7 @@ private:
     int m_id; // Name m_id_lbl can lead to conflict with MOC generated code.
               // TODO: rename all _XXX то m_XXX.
 
-    int _errors = 0;
+    size_t m_errors = 0;
 
     Point _topLeftPos;
     Point _size;
@@ -146,7 +145,7 @@ private:
         ar &m_id;
         ar & _nextID;
         ar & _delta;
-        ar & _errors;
+        ar &m_errors;
         ar & _childTopLeftPos;
         ar & _childSize;
         ar & _stack;

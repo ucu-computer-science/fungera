@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "point.h"
 
-Point::Point(int _x, int _y) : x(_x), y(_y) {}
+Point::Point(int x_, int y_) : x(x_), y(y_) {}
 
 QString Point::qstr()
 {

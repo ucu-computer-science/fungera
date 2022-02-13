@@ -15,8 +15,8 @@ struct Point
 
     QString qstr();
 
-    int x;
-    int y;
+    int x = -1;
+    int y = -1;
 
     Point &operator+=(Point rhs);
 
