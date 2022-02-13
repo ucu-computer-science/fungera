@@ -12,6 +12,7 @@
 #include <cmath>
 #include <utility>
 #include <vector>
+#include <stdexcept>
 
 Organism::Organism(Point topLeftPos, Point size) : m_id(_nextID), _topLeftPos(topLeftPos), _size(size), _ip(topLeftPos)
 {
@@ -139,7 +140,7 @@ void Organism::findPattern()
     {
         if (OrganismQueue::getInstance()->getLogLevel() == "debug")
             std::cerr << "findPattern is empty" << std::endl;
-        throw "findPattern is empty";
+        throw std::range_error{"findPattern is empty"};
     }
 
     ++i;
@@ -149,7 +150,6 @@ void Organism::findPattern()
             ++ctr;
         } else {
             i -= ctr;
-            assert( i<0 && "Negative i -- unexpected");
             ctr = 0;
         }
         if (ctr == pattern.size()) {
@@ -291,13 +291,13 @@ void Organism::separateChild()
             || _childTopLeftPos.y + _childSize.y >= Memory::getInstance()->cols()) {
         if (OrganismQueue::getInstance()->getLogLevel() == "debug")
             std::cerr << "Part of child is out of memory map, child is not separated" << std::endl;
-        throw "Child out of memory map";
+        throw std::range_error{"Child out of memory map"};
     }
     if (_childSize.x == 0 || _childSize.y == 0)
     {
         if (OrganismQueue::getInstance()->getLogLevel() == "debug")
             std::cerr << "Trying to allocate child with one of the size dimentions = 0" << std::endl;
-        throw "Wrong child size on separate";
+        throw std::range_error{"Wrong child size on separate"};
     }
     Organism *org = new Organism(_childTopLeftPos, _childSize);
     _organismQueue->addInterim(org);
@@ -322,7 +322,7 @@ void Organism::pushToStack()
     {
         if (OrganismQueue::getInstance()->getLogLevel() == "debug")
             std::cerr << "Pushing to full stack" << std::endl;
-        throw "Pushing to full stack";
+        throw std::range_error{"Pushing to full stack"};
     }
     _stack.push_back(regConts);
     emit pushedToStack();
@@ -335,7 +335,7 @@ void Organism::popFromStack()
     {
         if (OrganismQueue::getInstance()->getLogLevel() == "debug")
             std::cerr << "Poping from empty stack" << std::endl;
-        throw "Poping from empty stack";
+        throw std::range_error{"Poping from empty stack"};
     }
     _regs.at(reg) = _stack.back();
     _stack.pop_back();
@@ -363,7 +363,7 @@ void Organism::jump()
     {
         if (OrganismQueue::getInstance()->getLogLevel() == "debug")
             std::cerr << "Pattern of length 0" << std::endl;
-        throw "Pattern of length 0";
+        throw std::range_error{"Pattern of length 0"};
     }
 
     ++i;
@@ -423,7 +423,7 @@ void Organism::jumpInRange() {
     {
         if (OrganismQueue::getInstance()->getLogLevel() == "debug")
             std::cerr << "Pattern of length 0" << std::endl;
-        throw "Pattern of length 0";
+        throw std::range_error{"Pattern of length 0"};
     }
 
     if (_delta.x == -1) {
@@ -452,7 +452,6 @@ void Organism::jumpInRange() {
                     ++ctr;
                 } else {
                     x = x - ctr;
-                    assert( x<0 && "Negative x -- unexpected");
                     ctr = 0;
                 }
                 if (ctr == pattern.size()) {
@@ -471,7 +470,6 @@ void Organism::jumpInRange() {
                     ++ctr;
                 } else {
                     y = y - ctr;
-                    assert( y<0 && "Negative x -- unexpected");
                     ctr = 0;
                 }
                 if (ctr == pattern.size()) {
@@ -557,7 +555,7 @@ Point Organism::getIpAtOffset(int offset)
     {
         if (OrganismQueue::getInstance()->getLogLevel() == "debug")
             std::cerr << "getIpAtOffset got out of bounds" << std::endl;
-        throw "getIpAtOffset got out of bounds";
+        throw std::range_error{"getIpAtOffset got out of bounds"};
 
     }
     return ip_at_offset;
