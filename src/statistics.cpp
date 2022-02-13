@@ -122,33 +122,27 @@ std::vector<Point> Statistics::locationsOfDifference(Organism *org, Organism *an
 }
 
 void Statistics::printAllStatistics() {
-    std::cout << "Cycle " << OrganismQueue::getInstance()->cycle_no << ". Stats: " << std::endl;
+    OrganismQueue *oq = OrganismQueue::getInstance();
+    std::cout << "Cycle " << oq->cycle_no << ". Stats: " << std::endl;
 
-    std::cout << "Num of organisms: " << OrganismQueue::getInstance()->getOrganismsNum() << std::endl;
+    std::cout << "Num of organisms: " << oq->getOrganismsNum() << std::endl;
 
     std::map<Point, int> sizeStat = this->sizeNOrgs();
     for (std::pair<Point,int> entry : sizeStat)
         std::cout << "  " << entry.first.x << ", " << entry.first.y << ": " << entry.second << std::endl;
 
-    std::cout << "Entropy: " << this->entropy(OrganismQueue::getInstance()) << std::endl;
+    std::cout << "Entropy: " << this->entropy(oq) << std::endl;
 
     std::cout << "Evolution tree:" << std::endl;
     for (std::pair<int, std::pair<int, size_t>> cu_rel: evo_tree)
     {
-        Point parent_size(-1, -1);
-        if (OrganismQueue::getInstance()->getOrganism(cu_rel.second.first) != NULL)
-        {
-            if (OrganismQueue::getInstance()->getOrganism(cu_rel.second.first) == NULL)
-                continue;
-            parent_size = OrganismQueue::getInstance()->getOrganism(cu_rel.second.first)->getSize();
-        }
-        Point child_size(-1, -1);
-        if (OrganismQueue::getInstance()->getOrganism(cu_rel.second.first) != NULL)
-        {
-            if (OrganismQueue::getInstance()->getOrganism(cu_rel.first) == NULL)
-                continue;
-            child_size = OrganismQueue::getInstance()->getOrganism(cu_rel.first)->getSize();
-        }
+        if (oq->getOrganism(cu_rel.second.first) == NULL
+                || oq->getOrganism(cu_rel.first) == NULL)
+            continue;
+
+        Point parent_size = oq->getOrganism(cu_rel.second.first)->getSize();
+        Point child_size = oq->getOrganism(cu_rel.first)->getSize();
+
         std::cout << "  " << cu_rel.second.first << "(" << parent_size.x << ", " << parent_size.y << ")"
             << " -> " << cu_rel.first << "(" << child_size.x << ", " << child_size.y << ")"
             << " (cycle " << cu_rel.second.second << ")" << std::endl;

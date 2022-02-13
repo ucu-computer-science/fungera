@@ -34,14 +34,13 @@ public:
     Organism * getOrganism(int id) {
         for (Organism *org : _organisms)
             if (org->id() == id)
-                return _organisms[id];
+                return org;
         return NULL;
     }
 
     size_t getOrganismsNum() const {
         return _organisms.size();
     }
-
     std::vector<Organism*> getOrganisms() {
         return _organisms;
     }
