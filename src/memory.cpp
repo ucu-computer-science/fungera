@@ -6,6 +6,7 @@
 #include <iostream>
 #include <random>
 #include <vector>
+#include <stdexcept>
 #include "organismqueue.h"
 
 namespace
@@ -28,7 +29,6 @@ Iter select_randomly(Iter start, Iter end)
 }
 } // namespace
 
-Memory::Memory() {}
 
 Memory *Memory::getInstance()
 {
@@ -36,33 +36,32 @@ Memory *Memory::getInstance()
     return &m;
 }
 
-int Memory::rows() const { return _rows; }
+size_t Memory::rows() const { return m_rows; }
 
-int Memory::cols() const { return _cols; }
+size_t Memory::cols() const { return m_cols; }
 
-char &Memory::instAt(int row, int col) {
-    if (row < 0 || row >= _rows || col < 0 || col >= _cols) {
+char &Memory::instAt(size_t row, size_t col) {
+    if (row < 0 || row >= m_rows || col < 0 || col >= m_cols) {
         if (OrganismQueue::getInstance()->getLogLevel() == "debug")
             std::cerr << "Accessing row/col out of memory map" << std::endl;
-        throw "Accessing row/col out of memory map";
+        throw std::range_error{"Accessing row/col out of memory map"};
     }
     return (*this)(row, col).inst;
 }
 
-char Memory::instAt(int row, int col) const {
-    if (row < 0 || row >= _rows || col < 0 || col >= _cols) {
+char Memory::instAt(size_t row, size_t col) const {
+    if ( row >= m_rows || col >= m_cols) {
         if (OrganismQueue::getInstance()->getLogLevel() == "debug")
             std::cerr << "Accessing row/col out of memory map" << std::endl;
-        throw "Accessing row/col out of memory map";
+        throw std::range_error{"Accessing row/col out of memory map"};
     }
     return (*this)(row, col).inst;
 }
 
-using std::string;
-Point Memory::loadGenome(const string &fileName, Point topLeftPos)
+Point Memory::loadGenome(const std::string &fileName, Point topLeftPos)
 {
     std::ifstream ifs(fileName);
-    string line;
+    std::string line;
     int row = topLeftPos.x;
     int col = topLeftPos.y;
     while (std::getline(ifs, line))
@@ -103,15 +102,15 @@ void Memory::allocArea(Point topLeftPos, Point size) { setAreaFreedom(topLeftPos
 
 void Memory::freeArea(Point topLeftPos, Point size) { setAreaFreedom(topLeftPos, size, true); }
 
-Cell &Memory::operator()(int row, int col) { return _cells[row * _cols + col]; }
+Cell &Memory::operator()(size_t row, size_t col) { return m_cells[row * m_cols + col]; }
 
-Cell Memory::operator()(int row, int col) const { return _cells[row * _cols + col]; }
+Cell Memory::operator()(size_t row, size_t col) const { return m_cells[row * m_cols + col]; }
 
 using std::vector;
 void Memory::irradiate()
 {
     static std::mt19937 gen(13 /* set seed here */);
-    std::uniform_int_distribution<> distr(0, _rows-1);
+    std::uniform_int_distribution<> distr(0, m_rows -1);
 
     int randRow = distr(gen);
     // Assuming that the number of cols is the same as the number of rows
@@ -122,27 +121,27 @@ void Memory::irradiate()
     (*this).instAt(randRow, randCol) = *select_randomly(instructions.begin(), instructions.end(), gen);
 }
 
-bool Memory::isTimeToKill()
+bool Memory::isTimeToKill(double memoryFullRatio)
 {
-    double ratio = (double) std::count_if(_cells, _cells+_rows*_cols, [](const Cell &cell){ return !cell.isFree; })
-            / std::count_if(_cells, _cells+_rows*_cols, [](const Cell &cell){ return cell.isFree; });
-    constexpr auto memoryFullRatio = 0.01;
+    auto free_cells = std::count_if(m_cells.begin(), m_cells.end(), [](const Cell &cell){ return cell.isFree; });
+    auto nonfree_cells = m_cells.size() - free_cells;
+    double ratio = static_cast<double>(nonfree_cells)/free_cells; // TODO: Тут вартує не заняті/вільні, а заняті/всього.
     std::cout << "RATIO: " << ratio << std::endl;
     return ratio > memoryFullRatio;
 }
 
 void Memory::setAreaFreedom(Point topLeftPos, Point size, bool isFree)
 {
-    int lastRow = std::min(topLeftPos.x + size.x, rows());
-    int lastCol = std::min(topLeftPos.y + size.y, cols());
-    for (int row = topLeftPos.x; row < lastRow; ++row)
-        for (int col = topLeftPos.y; col < lastCol; ++col)
+    auto lastRow = std::min<size_t>(topLeftPos.x + size.x, rows());
+    auto lastCol = std::min<size_t>(topLeftPos.y + size.y, cols());
+    for (size_t row = topLeftPos.x; row < lastRow; ++row)
+        for (size_t col = topLeftPos.y; col < lastCol; ++col)
             (*this)(row, col).isFree = isFree;
 }
 
-void Memory::setInstAt(int row, int col, char new_inst)
+void Memory::setInstAt(size_t row, size_t col, char new_inst)
 {
-    this->_cells[row*_rows+col].inst = new_inst;
+    this->m_cells[row* m_rows +col].inst = new_inst;
 }
 void Memory::setInstAt(Point pnt, char new_inst)
 {
@@ -150,8 +149,8 @@ void Memory::setInstAt(Point pnt, char new_inst)
 }
 
 void Memory::clear() {
-    for (int i = 0; i < _rows*_cols; i++) {
-        _cells[i].inst = '.';
-        _cells[i].isFree = true;
+    for (int i = 0; i < m_rows * m_cols; i++) {
+        m_cells[i].inst = '.';
+        m_cells[i].isFree = true;
     }
 }

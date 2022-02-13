@@ -38,7 +38,7 @@ public:
         return NULL;
     }
 
-    size_t getOrganismsNum() {
+    size_t getOrganismsNum() const {
         return _organisms.size();
     }
 
@@ -51,19 +51,19 @@ public:
 
     // TODO: reconsider whether these method and field should be in OrganismQueue or in some other class or check this in some other way 
 
-    bool getDrawIP();
+    bool getDrawIP() const;
     void setDrawIP(bool value);
 
-    std::string getLogLevel() {
+    std::string getLogLevel() const {
         return logLevel;
     }
-    void setLogLevel(std::string log_level) {
+    void setLogLevel(const std::string& log_level) {
         logLevel = log_level;
     }
 
     bool drawIP = false;
     std::string logLevel = "release";
-    unsigned orgSnap = 0;
+    size_t orgSnap = 0;
 
     size_t successes = 0;
     size_t fails = 0;
@@ -84,10 +84,10 @@ private:
     std::vector<Organism *> _organisms;
     std::vector<Organism *> _organismsInterim;
 
-    int _activeOrgIdx = 0;
+    size_t _activeOrgIdx = 0;
 
     template<class Archive>
-    void serialize(Archive & ar, const unsigned int version)
+    void serialize(Archive & ar, const unsigned int) // version
     {
         ar & _organisms;
         ar & _activeOrgIdx;

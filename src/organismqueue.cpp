@@ -62,9 +62,9 @@ void OrganismQueue::killOrganisms()
     std::cout << " ******** KILLING ******* " << std::endl;
     std::sort(_organisms.begin(), _organisms.end(), [](const Organism* lhs, const Organism* rhs){ return *lhs < *rhs; });
     constexpr double killOrganismsRatio = 0.5;
-    int ratio = static_cast<int>(_organisms.size() * killOrganismsRatio);
+    auto ratio = static_cast<size_t>(_organisms.size() * killOrganismsRatio); //-V113
     for (; ratio > 0; --ratio) {
-        Organism *org = _organisms.back();
+        auto org = _organisms.back();
         _organisms.pop_back();
         delete org;
     }
@@ -74,6 +74,6 @@ void OrganismQueue::setDrawIP(bool value) {
     drawIP = value;
 }
 
-bool OrganismQueue::getDrawIP() {
+bool OrganismQueue::getDrawIP() const {
     return drawIP;
 }

@@ -35,9 +35,9 @@ double Statistics::entropy(OrganismQueue *oq) {
 
                 if ( commands_freq.find(cu_point) == commands_freq.end() )
                 {
-                    std::map<char, int> *cu_entry = new std::map<char, int>;
-                    (*cu_entry)[instr] = 0;
-                    commands_freq[cu_point] = *cu_entry;
+                    std::map<char, int> cu_entry{};
+                    cu_entry[instr] = 0;
+                    commands_freq[cu_point] = cu_entry;
                 }
 
                 if ( commands_freq[cu_point].find(instr) == commands_freq[cu_point].end() )
@@ -63,7 +63,7 @@ double Statistics::entropy(OrganismQueue *oq) {
                 max_instr_i = curr_subentry.first;
             }
         }
-        double per_site_entropy = (double) max_val/numOrgs;
+        double per_site_entropy = static_cast<double>(max_val)/numOrgs; //-V113
         per_site_entropies[curr_pnt] = per_site_entropy*std::log(per_site_entropy);
     }
 
@@ -96,7 +96,8 @@ void Statistics::addRelation(int child_id, int parent_id, size_t cycle_no) {
     i++;
 }
 
-unsigned Statistics::hammingDistance(Organism *org, Organism *an_org) {
+size_t Statistics::hammingDistance(Organism *org, Organism *an_org) {
+    // TODO: Дуже неефективна реалізація...
     return Statistics::locationsOfDifference(org, an_org).size();
 }
 
@@ -108,10 +109,12 @@ std::vector<Point> Statistics::locationsOfDifference(Organism *org, Organism *an
     std::vector<Point> locsOfDiff;
     for (int i = 0; i < org->getSize().x; i++) {
         for (int j = 0; j < org->getSize().y; j++) {
-            char orgInst = m->instAt(org->getTopLeftPos().x+i, org->getTopLeftPos().y+j);
-            char an_orgInst = m->instAt(an_org->getTopLeftPos().x+i, an_org->getTopLeftPos().y+j);
+            const auto& orgTopLeftPos = org->getTopLeftPos();
+            const auto& an_orgTopLeftPos = an_org->getTopLeftPos();
+            char orgInst = m->instAt(orgTopLeftPos.x+i, orgTopLeftPos.y+j);
+            char an_orgInst = m->instAt(an_orgTopLeftPos.x+i, an_orgTopLeftPos.y+j);
             if (orgInst != an_orgInst) {
-                locsOfDiff.push_back(Point(org->getTopLeftPos().x+i, org->getTopLeftPos().y+j));
+                locsOfDiff.emplace_back( orgTopLeftPos.x+i, orgTopLeftPos.y+j );
             }
         }
     }

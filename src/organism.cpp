@@ -13,7 +13,7 @@
 #include <utility>
 #include <vector>
 
-Organism::Organism(Point topLeftPos, Point size) : _id(_nextID), _topLeftPos(topLeftPos), _size(size), _ip(topLeftPos)
+Organism::Organism(Point topLeftPos, Point size) : m_id(_nextID), _topLeftPos(topLeftPos), _size(size), _ip(topLeftPos)
 {
     connect(this, &Organism::cellChanged, MemoryView::getInstance(), &MemoryView::paintCellIfVisible);
     connect(this, &Organism::colorsChanged, MemoryView::getInstance(), &MemoryView::paintArea);
@@ -28,7 +28,7 @@ Organism::Organism(Point topLeftPos, Point size) : _id(_nextID), _topLeftPos(top
 }
 
 Organism::Organism()
-    : _id(_nextID), _topLeftPos({0, 0}), _size({0, 0}), _ip({0, 0}) { }
+    : m_id(_nextID), _topLeftPos({0, 0}), _size({0, 0}), _ip({0, 0}) { }
 
 Organism::~Organism()
 {
@@ -41,7 +41,7 @@ Organism::~Organism()
 void Organism::self_serialize() {
     // TODO: Fix this hardcoded name and before executing check if folder exists
     size_t curr_cycle = OrganismQueue::getInstance()->cycle_no;
-    std::ofstream o_this("organisms/" + std::to_string(this->_id) + "_" + std::to_string(curr_cycle));
+    std::ofstream o_this("organisms/" + std::to_string(this->m_id) + "_" + std::to_string(curr_cycle));
     {
         boost::archive::text_oarchive oa_child(o_this);
         oa_child << *this;
@@ -70,7 +70,8 @@ void Organism::cycle()
             emit cellChanged(_ip.x, _ip.y);
         }
         OrganismQueue::getInstance()->successes++;
-    } catch (...) { // Catch any type of error
+    } catch (...) { // Catch any type of error 
+                    // TODO: catch (...) is too general here
         ++_errors;
         OrganismQueue::getInstance()->fails++;
     }
@@ -148,6 +149,7 @@ void Organism::findPattern()
             ++ctr;
         } else {
             i -= ctr;
+            assert( i<0 && "Negative i -- unexpected");
             ctr = 0;
         }
         if (ctr == pattern.size()) {
@@ -260,8 +262,8 @@ void Organism::allocChild()
     char reg1 = getInstAtOffset(1);
     _childSize = _regs.at(reg1);
 
-    _childSize.x = std::min(_memory->rows()-1, _childSize.x);
-    _childSize.y = std::min(_memory->cols()-1, _childSize.y);
+    _childSize.x = std::min<int>(_memory->rows()-1, _childSize.x);
+    _childSize.y = std::min<int>(_memory->cols()-1, _childSize.y);
     // ?
     if (_childSize.x == 0 && _childSize.y == 0)
         return;
@@ -302,7 +304,7 @@ void Organism::separateChild()
     _childSize = { 0, 0 };
 
     size_t curr_cycle = OrganismQueue::getInstance()->cycle_no;
-    OrganismQueue::getInstance()->qStat.addRelation(org->_id, this->_id, curr_cycle);
+    OrganismQueue::getInstance()->qStat.addRelation(org->m_id, this->m_id, curr_cycle);
 
     if (OrganismQueue::getInstance()->orgSnap)
     {
@@ -450,6 +452,7 @@ void Organism::jumpInRange() {
                     ++ctr;
                 } else {
                     x = x - ctr;
+                    assert( x<0 && "Negative x -- unexpected");
                     ctr = 0;
                 }
                 if (ctr == pattern.size()) {
@@ -468,6 +471,7 @@ void Organism::jumpInRange() {
                     ++ctr;
                 } else {
                     y = y - ctr;
+                    assert( y<0 && "Negative x -- unexpected");
                     ctr = 0;
                 }
                 if (ctr == pattern.size()) {
@@ -503,13 +507,13 @@ void Organism::jumpInRange() {
         double min_len = std::sqrt(pow(min_point.first-_ip.x, 2)+pow(min_point.second-_ip.y, 2));
 
         // First occurance is prioritized
-        for (size_t i = 1; i < possible_res.size(); i++) {
-            double current_len = std::sqrt(pow(possible_res[i].first-_ip.x, 2)
-                    + pow(possible_res[i].second-_ip.y, 2));
+        for (size_t j = 1; j < possible_res.size(); j++) {
+            double current_len = std::sqrt(pow(possible_res[j].first-_ip.x, 2)
+                    + pow(possible_res[j].second-_ip.y, 2));
             if (current_len < min_len) {
                 min_len = current_len;
-                min_point.first = possible_res[i].first;
-                min_point.second = possible_res[i].second;
+                min_point.first = possible_res[j].first;
+                min_point.second = possible_res[j].second;
             }
         }
         _ip.x = min_point.first;

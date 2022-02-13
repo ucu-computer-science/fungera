@@ -58,15 +58,15 @@ private:
     using PairsCache = std::unordered_map<Pair, QPixmap, boost::hash<Pair> >;
     PairsCache _pairsCache;
 
-    int _cellWidth;
-    int _cellHeight;
+    int _cellWidth = -1; // -1 -- safe initial value
+    int _cellHeight = -1;
 
-    int _viewX;
-    int _firstRow;
-    int _lastRow;
-    int _viewY;
-    int _firstCol;
-    int _lastCol;
+    int _viewX = -1;
+    int _firstRow = -1;
+    int _lastRow = -1;
+    int _viewY = -1;
+    int _firstCol = -1;
+    int _lastCol = -1;
 };
 
 #endif // MEMORYVIEW_H

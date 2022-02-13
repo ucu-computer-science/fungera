@@ -38,7 +38,7 @@ void MemoryView::paintEvent(QPaintEvent * /*event*/)
 
 // TODO: Move the update of the last row and column to paint here
 // TODO: Add enlarging of the buffer
-void MemoryView::resizeEvent(QResizeEvent *event)
+void MemoryView::resizeEvent(QResizeEvent *) // event
 {
     updateScrollBars();
     updateRowRange(verticalScrollBar()->value());
@@ -98,15 +98,16 @@ void MemoryView::onVerBarValChanged(int verBarVal)
 void MemoryView::updateScrollBars()
 {
     QScrollBar *horBar = horizontalScrollBar();
-    int w = _memory->cols() * _cellWidth;
+    int w = static_cast<int>(_memory->cols() * _cellWidth);
     QSize sz = viewport()->size();
     // Assuming that the minimum of the scrollbars is always 0 and size
     // of the memory is larger than the vieport's one
+    assert(w > sz.width() && "Size the memory should be larger than the vieport's one"); // Ото треба не assume -- а перевіряти :=)
     horBar->setMaximum(w-sz.width());
     horBar->setPageStep(sz.width());
 
     QScrollBar *verBar = verticalScrollBar();
-    int h = _memory->rows() * _cellHeight;
+    int h = static_cast<int>(_memory->rows() * _cellHeight);
     verBar->setMaximum(h-sz.height());
     verBar->setPageStep(sz.height());
 }
@@ -116,7 +117,7 @@ void MemoryView::updateRowRange(int verBarVal)
     _viewY = verBarVal;
     _firstRow = _viewY / _cellHeight;
     int viewH = viewport()->height();
-    _lastRow = std::min(_memory->rows(), (_viewY+viewH) / _cellHeight + 1);
+    _lastRow = std::min<int>(_memory->rows(), (_viewY+viewH) / _cellHeight + 1);
 }
 
 void MemoryView::updateColRange(int horBarVal)
@@ -124,7 +125,7 @@ void MemoryView::updateColRange(int horBarVal)
     _viewX = horBarVal;
     _firstCol = _viewX / _cellWidth;
     int viewW = viewport()->width();
-    _lastCol = std::min(_memory->cols(), (_viewX+viewW) / _cellWidth + 1);
+    _lastCol = std::min<int>(_memory->cols(), (_viewX+viewW) / _cellWidth + 1);
 }
 
 void MemoryView::paintVisibleCells()

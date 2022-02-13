@@ -27,7 +27,7 @@ public:
     Organism();
 
     int id() {
-        return _id;
+        return m_id;
     }
 
     ~Organism();
@@ -110,7 +110,8 @@ private:
 
     static int _nextID;
 
-    int _id;
+    int m_id; // Name m_id_lbl can lead to conflict with MOC generated code.
+              // TODO: rename all _XXX то m_XXX.
 
     int _errors = 0;
 
@@ -137,12 +138,12 @@ private:
     friend class boost::serialization::access;
 
     template<class Archive>
-    void serialize(Archive & ar, const unsigned int version)
+    void serialize(Archive & ar, const unsigned int ) // version
     {
         ar & _topLeftPos;
         ar & _size;
         ar & _ip;
-        ar & _id;
+        ar &m_id;
         ar & _nextID;
         ar & _delta;
         ar & _errors;

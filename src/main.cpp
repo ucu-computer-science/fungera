@@ -17,14 +17,16 @@
 #include <fstream>
 #include <ostream>
 #include <vector>
+#include <filesystem>
 
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/program_options.hpp>
 
+
 bool isRunning = true;
 
-void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, unsigned snapCycle);
+void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, size_t snapCycle);
 void cycle(OrganismQueue *, StatusPanel *, size_t);
 void restoreMemoryMap();
 
@@ -53,14 +55,14 @@ int main(int argc, char *argv[])
      */
 
     bool isRestore = false;
-    bool isCheck = false;
+    // bool isCheck = false;
     bool drawIP = false;
     bool isExtractAlone = false;
     bool isExtractInContext = false;
     std::string extractFn = "";
     string log_level = "release";
     int instructionSetIdx = 0;
-    unsigned snapCycle = 0;
+    size_t snapCycle = 0;
     unsigned orgSnap = 0;
 
 
@@ -279,8 +281,8 @@ int main(int argc, char *argv[])
         sp = new StatusPanel(org);
     }
     else {
-        system("mkdir -p cache");
-        system("mkdir -p organisms");
+        std::filesystem::create_directories("cache");
+        std::filesystem::create_directories("organisms");
 
         sz = m->loadGenome(fn, tlp);
 
@@ -338,9 +340,9 @@ int main(int argc, char *argv[])
     wgt.show();
 
     QScrollBar *horBar = mw->horizontalScrollBar();
-    horBar->setValue(horBar->maximum()*((double)tlp.y/m->cols()));
+    horBar->setValue(horBar->maximum()*( static_cast<double>(tlp.y)/m->cols()) );
     QScrollBar *verBar = mw->verticalScrollBar();
-    verBar->setValue(verBar->maximum()*((double)tlp.x/m->rows()));
+    verBar->setValue(verBar->maximum()*( static_cast<double>(tlp.x)/m->rows()) );
 
     // MainWindow w;
     // w.show();
@@ -365,7 +367,7 @@ void make_snapshot() {
     std::cout << "  Done" << std::endl;
 }
 
-void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, unsigned snapCycle)
+void run(OrganismQueue *organismQueue, StatusPanel *statusPanel, size_t snapCycle)
 {
 
     std::cout << "0" << std::endl;

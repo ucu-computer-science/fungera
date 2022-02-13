@@ -12,7 +12,7 @@ class StatusPanel : public QWidget
 public:
     explicit StatusPanel(Organism *organism, QWidget *parent = nullptr);
 
-    void cycle(int curr_cycle);
+    void cycle(size_t curr_cycle);
 
 public slots:
 //    void onPurgeHappened(int purged);
@@ -31,13 +31,13 @@ private:
 
     Organism *_organism = nullptr;
 
-    QLabel *_cycleNoLbl = new QLabel;
+    QLabel *_cycleNoLbl = new QLabel; // TODO: brrrr такі new! А де деструктор?..
 
     QLabel *_alive = new QLabel;
 
     QLabel *_purges = new QLabel;
 
-    QLabel *_id = new QLabel;
+    QLabel *m_id_lbl = new QLabel; // _id has possible name conflict
 
     QLabel *_errors = new QLabel;
 

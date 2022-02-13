@@ -24,7 +24,7 @@ StatusPanel::StatusPanel(Organism *organism, QWidget *parent) : QWidget(parent),
                                         "IP",      "Delta",   "RA",      "RB",          "RC",
                                         "RD",      "Stack_0", "Stack_1", "Stack_2",     "Stack_3",
                                         "Stack_4", "Stack_5", "Stack_6", "Stack_7" };
-    QLabel *propertiesValuesLabels[PROPERTIES] = { _cycleNoLbl, _alive,  _purges, _id,     _errors,
+    QLabel *propertiesValuesLabels[PROPERTIES] = { _cycleNoLbl, _alive,  _purges, m_id_lbl,     _errors,
                                                    _ip,         _delta,  _ra,     _rb,     _rc,
                                                    _rd,         _stack0, _stack1, _stack2, _stack3,
                                                    _stack4,     _stack5, _stack6, _stack7 };
@@ -36,9 +36,9 @@ StatusPanel::StatusPanel(Organism *organism, QWidget *parent) : QWidget(parent),
     setLayout(gridLayout);
 }
 
-void StatusPanel::cycle(int curr_cycle)
+void StatusPanel::cycle(size_t curr_cycle)
 {
-    _cycleNoLbl->setNum(curr_cycle);
+    _cycleNoLbl->setNum(static_cast<int>(curr_cycle)); // Let the warning be just here and not through all the code
     updateIP();
 }
 

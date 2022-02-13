@@ -17,7 +17,7 @@ struct Cell
 
     friend class boost::serialization::access;
     template<class Archive>
-    void serialize(Archive & ar, const unsigned int version)
+    void serialize(Archive & ar, const unsigned int ) // Last arg name "version" removed to avoid warnings
     {
         ar & inst;
         ar & isFree;
