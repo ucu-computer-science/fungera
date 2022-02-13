@@ -81,18 +81,18 @@ Point Memory::loadGenome(const std::string &fileName, Point topLeftPos)
 
 bool Memory::isAreaFree(Point topLeftPos, Point size)
 {
-    int lastRow = topLeftPos.x + size.x;
-    int lastCol = topLeftPos.y + size.y;
+    size_t lastRow = topLeftPos.x + size.x;
+    size_t lastCol = topLeftPos.y + size.y;
 
     if (lastRow >= rows() || lastCol >= cols())
     {
         if (OrganismQueue::getInstance()->getLogLevel() == "debug")
             std::cerr << "Memory area out of memory map bounds" << std::endl;
-        throw "Memory area out of memory map bounds";
+        throw std::range_error{"Memory area out of memory map bounds"};
     }
 
-    for (int row = topLeftPos.x; row < lastRow; ++row)
-        for (int col = topLeftPos.y; col < lastCol; ++col)
+    for (size_t row = topLeftPos.x; row < lastRow; ++row)
+        for (size_t col = topLeftPos.y; col < lastCol; ++col)
             if (!(*this)(row, col).isFree)
                 return false;
     return true;
@@ -149,7 +149,7 @@ void Memory::setInstAt(Point pnt, char new_inst)
 }
 
 void Memory::clear() {
-    for (int i = 0; i < m_rows * m_cols; i++) {
+    for (size_t i = 0; i < m_rows * m_cols; i++) {
         m_cells[i].inst = '.';
         m_cells[i].isFree = true;
     }

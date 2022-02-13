@@ -271,8 +271,8 @@ void Organism::allocChild()
     int maxI = std::max(_memory->rows()-_childSize.x, _memory->cols()-_childSize.y);
     for (int i = 3; i < maxI; ++i) {
         _childTopLeftPos = getIpAtOffset(i);
-        if (_childTopLeftPos.x >= _memory->rows()
-                || _childTopLeftPos.y >= _memory->cols()) {
+        if (_childTopLeftPos.x >= static_cast<int>(_memory->rows()) ||
+            _childTopLeftPos.y >= static_cast<int>(_memory->cols()) ) {
             break;
         }
         if (_memory->isAreaFree(_childTopLeftPos, _childSize)) {
@@ -287,8 +287,8 @@ void Organism::allocChild()
 
 void Organism::separateChild()
 {
-    if (_childTopLeftPos.x + _childSize.x >= Memory::getInstance()->rows()
-            || _childTopLeftPos.y + _childSize.y >= Memory::getInstance()->cols()) {
+    if (_childTopLeftPos.x + _childSize.x >= static_cast<int>(Memory::getInstance()->rows()) ||
+        _childTopLeftPos.y + _childSize.y >= static_cast<int>(Memory::getInstance()->cols()) ) {
         if (OrganismQueue::getInstance()->getLogLevel() == "debug")
             std::cerr << "Part of child is out of memory map, child is not separated" << std::endl;
         throw std::range_error{"Child out of memory map"};
@@ -550,8 +550,8 @@ void Organism::randomDelta() {
 Point Organism::getIpAtOffset(int offset)
 {
     Point ip_at_offset = _ip+offset*_delta;
-    if (ip_at_offset.x < 0 || ip_at_offset.x >= Memory::getInstance()->rows()
-            || ip_at_offset.y < 0 || ip_at_offset.y >= Memory::getInstance()->cols())
+    if (ip_at_offset.x < 0 || ip_at_offset.x >= static_cast<int>(Memory::getInstance()->rows()) ||
+        ip_at_offset.y < 0 || ip_at_offset.y >= static_cast<int>(Memory::getInstance()->cols()))
     {
         if (OrganismQueue::getInstance()->getLogLevel() == "debug")
             std::cerr << "getIpAtOffset got out of bounds" << std::endl;
