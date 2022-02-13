@@ -26,9 +26,11 @@ public:
     Organism(Point topLeftSize, Point size);
     Organism();
 
-    int id() {
-        return m_id;
-    }
+    //! Just in case -- copying by itself is not a problem
+    Organism(const Organism&) = delete;
+    Organism& operator=(const Organism&) = delete;
+
+    int id() const { return m_id; }
 
     ~Organism();
 
@@ -39,20 +41,16 @@ public:
 
     char getInstAtOffsetAbs(Point offset);
 
-    Point getSize() {
-        return _size;
-    }
-    Point getTopLeftPos() {
-        return _topLeftPos;
-    }
+    Point getSize() const { return _size; }
+    Point getTopLeftPos() const { return _topLeftPos; }
 
     size_t last_snap_cycle = 0;
     void self_serialize();
 
-    Point getIP() { return _ip; }
-    Point getDelta() { return _delta; }
+    Point getIP() const { return _ip; }
+    Point getDelta() const { return _delta; }
 
-    void setIP(Point newIP) { _ip = newIP; }
+    void setIP(Point newIP)  { _ip = newIP; }
     void setDelta(Point newDelta) { _delta = newDelta; }
 
     size_t getErrors() const { return m_errors; }
