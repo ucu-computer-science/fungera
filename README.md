@@ -64,6 +64,8 @@ To generate large system quickly (for hundreds of thouthands cycles), consider m
 * **statistics.cpp & statistics.h** contains function for analyzing the system, e.g. calculating entropy, building evolutional tree
 * **mainwindow & statuspanel** contains classes and methods required for Qt front-end
 
+ncurses/* branches contains deprecated ncurses version of C++ implementation.
+
 
 ## Reference papers
 * [1] Poliakov, Mykhailo. "Evolution of digital organisms in truly two-dimensional memory space", 2020
