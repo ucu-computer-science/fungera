@@ -46,7 +46,7 @@ private:
 
     void paintVisibleCells();
 
-    using Pair = std::pair<char, QColor>;
+    using Pair = std::pair<char, Qt::GlobalColor>;
     const QPixmap &getPixmapForPair(const Pair &p);
 
     Memory *_memory = Memory::getInstance();

@@ -1,5 +1,7 @@
 #include "statuspanel.h"
 
+#include "organismqueue.h"
+
 #include <sstream>
 #include <string_view>
 #include <unordered_map>
@@ -7,6 +9,8 @@
 using std::string_view;
 StatusPanel::StatusPanel(Organism *organism, QWidget *parent) : QWidget(parent), _organism(organism)
 {
+    connect(OrganismQueue::getInstance(), &OrganismQueue::organismChanged, this, &StatusPanel::updateOrganism);
+
     connect(_organism, &Organism::deltaChanged, this, &StatusPanel::updateDelta);
     connect(_organism, &Organism::regChanged, this, &StatusPanel::updateReg);
     connect(_organism, &Organism::pushedToStack, this, &StatusPanel::onPushedToStack);
@@ -30,14 +34,26 @@ StatusPanel::StatusPanel(Organism *organism, QWidget *parent) : QWidget(parent),
     setLayout(gridLayout);
 }
 
-void StatusPanel::cycle()
+void StatusPanel::cycle(int curr_cycle)
 {
-    _cycleNoLbl->setNum(_cycleNo);
-    ++_cycleNo;
+    _cycleNoLbl->setNum(curr_cycle);
     updateIP();
 }
 
-void StatusPanel::updateOrganism(Organism *organism) { _organism = organism; }
+void StatusPanel::updateOrganism(Organism *organism)
+{
+    disconnect(_organism, &Organism::deltaChanged, this, &StatusPanel::updateDelta);
+    disconnect(_organism, &Organism::regChanged, this, &StatusPanel::updateReg);
+    disconnect(_organism, &Organism::pushedToStack, this, &StatusPanel::onPushedToStack);
+    disconnect(_organism, &Organism::popedFromStack, this, &StatusPanel::onPoppedFromStack);
+
+    _organism = organism;
+
+    connect(_organism, &Organism::deltaChanged, this, &StatusPanel::updateDelta);
+    connect(_organism, &Organism::regChanged, this, &StatusPanel::updateReg);
+    connect(_organism, &Organism::pushedToStack, this, &StatusPanel::onPushedToStack);
+    connect(_organism, &Organism::popedFromStack, this, &StatusPanel::onPoppedFromStack);
+}
 
 using std::stringstream;
 void StatusPanel::updateDelta()
@@ -57,7 +73,7 @@ void StatusPanel::updateReg(char reg)
 
 void StatusPanel::onPushedToStack()
 {
-    QString qstr = _organism->_stack.top().qstr();
+    QString qstr = _organism->_stack.back().qstr();
     _stackLbls[_nextAfterTopIdx]->setText(qstr);
     ++_nextAfterTopIdx;
 }

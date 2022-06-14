@@ -12,7 +12,7 @@ class StatusPanel : public QWidget
 public:
     explicit StatusPanel(Organism *organism, QWidget *parent = nullptr);
 
-    void cycle();
+    void cycle(int curr_cycle);
 
 public slots:
 //    void onPurgeHappened(int purged);
@@ -28,8 +28,6 @@ public slots:
 
 private:
     void updateIP();
-
-    int _cycleNo = 0;
 
     Organism *_organism = nullptr;
 
@@ -65,7 +63,6 @@ private:
     QLabel *_stack5 = new QLabel;
     QLabel *_stack6 = new QLabel;
     QLabel *_stack7 = new QLabel;
-    // Not sure if these consts are what I want
     // TODO: Look into this and possibly rename the variables
     QLabel * const _stackLbls[8] = { _stack0, _stack1, _stack2, _stack3, _stack4, _stack5, _stack6, _stack7 };
     int _nextAfterTopIdx = 0;
